@@ -1,0 +1,121 @@
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 25px 40px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 4px;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-section a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.username {
+  font-weight: 700;
+}
+
+.logout-button {
+  padding: 8px 15px;
+
+  border: 1px solid white;
+  border-radius: 8px;
+
+  background: transparent;
+  color: white;
+
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: white;
+  color: #123524;
+}
+
+.home {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #123524;
+  color: white;
+}
+
+.content {
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+  font-size: 80px;
+  font-weight: 800;
+  letter-spacing: 12px;
+}
+
+.subtitle {
+  margin: 15px 0 40px;
+  font-size: 24px;
+  opacity: 0.9;
+}
+
+.player-options {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+button {
+  width: 150px;
+  height: 150px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  border: none;
+  border-radius: 20px;
+
+  background: white;
+  color: #123524;
+
+  cursor: pointer;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+}
+
+.number {
+  font-size: 48px;
+  font-weight: 800;
+}
+
+.text {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}

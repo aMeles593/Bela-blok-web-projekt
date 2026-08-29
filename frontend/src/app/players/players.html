@@ -1,0 +1,41 @@
+<div class="players-page">
+
+  <div class="players-container">
+
+    <h1>Nova igra</h1>
+
+    <p>Unesite imena igrača koji sudjeluju u igri.</p>
+
+    <div class="player-list">
+
+      @for (player of players; track $index) {
+
+        <div class="player">
+
+          <label>
+            Igrač {{ $index + 1 }}
+          </label>
+
+          <input
+            type="text"
+            placeholder="Unesite ime igrača"
+            [(ngModel)]="players[$index]"
+          />
+
+        </div>
+
+      }
+
+    </div>
+
+    <button
+      class="start-button"
+      (click)="startGame()"
+      [disabled]="players.some(player => player.trim() === '')"
+    >
+      ZAPOČNI IGRU
+    </button>
+
+  </div>
+
+</div>

@@ -1,0 +1,103 @@
+.register-page {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: #123524;
+  color: white;
+}
+
+.register-container {
+  width: 100%;
+  max-width: 450px;
+  padding: 40px;
+}
+
+h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 48px;
+}
+
+.subtitle {
+  text-align: center;
+  margin: 15px 0 35px;
+  opacity: 0.85;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+label {
+  font-weight: 600;
+}
+
+input {
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+
+  font-size: 16px;
+
+  outline: none;
+}
+
+button {
+  margin-top: 10px;
+
+  padding: 16px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: white;
+  color: #123524;
+
+  font-size: 17px;
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+.login-text {
+  text-align: center;
+  margin-top: 25px;
+}
+
+.login-text a {
+  color: white;
+  font-weight: bold;
+}
+
+.error-message,
+.success-message {
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.error-message {
+  background: #ffdede;
+  color: #9b1c1c;
+}
+
+.success-message {
+  background: #dff5e5;
+  color: #176b35;
+}

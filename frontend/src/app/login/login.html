@@ -1,0 +1,56 @@
+<div class="login-page">
+
+  <div class="login-container">
+
+    <h1>Prijava</h1>
+
+    <p class="subtitle">
+      Prijavi se i nastavi svoju igru.
+    </p>
+
+    <form (ngSubmit)="login()">
+
+      <div class="form-group">
+        <label for="username">Korisničko ime</label>
+
+        <input
+          id="username"
+          type="text"
+          name="username"
+          [(ngModel)]="username"
+          placeholder="Unesite korisničko ime"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Lozinka</label>
+
+        <input
+          id="password"
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          placeholder="Unesite lozinku"
+        />
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <button type="submit">
+        PRIJAVI SE
+      </button>
+
+    </form>
+
+    <p class="register-text">
+      Nemaš račun?
+      <a routerLink="/register">Registriraj se</a>
+    </p>
+
+  </div>
+
+</div>

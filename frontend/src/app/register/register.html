@@ -1,0 +1,74 @@
+<div class="register-page">
+
+  <div class="register-container">
+
+    <h1>Registracija</h1>
+
+    <p class="subtitle">
+      Napravi račun i prati svoju statistiku u beli.
+    </p>
+
+    <form (ngSubmit)="register()">
+
+      <div class="form-group">
+        <label for="username">Korisničko ime</label>
+
+        <input
+          id="username"
+          type="text"
+          name="username"
+          [(ngModel)]="username"
+          placeholder="Unesite korisničko ime"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Lozinka</label>
+
+        <input
+          id="password"
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          placeholder="Unesite lozinku"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Potvrdi lozinku</label>
+
+        <input
+          id="confirmPassword"
+          type="password"
+          name="confirmPassword"
+          [(ngModel)]="confirmPassword"
+          placeholder="Ponovite lozinku"
+        />
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="success-message">
+          {{ successMessage }}
+        </div>
+      }
+
+      <button type="submit">
+        REGISTRIRAJ SE
+      </button>
+
+    </form>
+
+    <p class="login-text">
+      Već imaš račun?
+      <a routerLink="/login">Prijavi se</a>
+    </p>
+
+  </div>
+
+</div>
