@@ -1,235 +1,88 @@
-.game-page {
-  min-height: 100vh;
 
-  display: flex;
-  justify-content: center;
-
-  background: #123524;
-  color: white;
-
-  padding: 50px 20px;
-
-  box-sizing: border-box;
-}
-
-
-.game-container {
+.four-player-game {
   width: 100%;
-  max-width: 950px;
-
-  text-align: center;
-}
-
-
-h1 {
-  margin: 0;
-
-  font-size: 56px;
-  letter-spacing: 4px;
-}
-
-
-.game-subtitle {
-  margin-top: 5px;
-
-  opacity: 0.8;
-}
-
-
-/* =========================
-   ODABIR IGRAČA
-========================= */
-
-.setup-section h2 {
-  margin-top: 40px;
-}
-
-
-.teams-preview {
-  display: grid;
-
-  grid-template-columns: repeat(2, 1fr);
-
-  gap: 25px;
-
-  margin-top: 30px;
-}
-
-
-.team-preview {
-  padding: 25px;
-
-  background: rgba(255, 255, 255, 0.1);
-
-  border-radius: 15px;
-}
-
-
-.team-preview h3 {
-  margin-top: 0;
-  margin-bottom: 20px;
-
-  font-size: 22px;
-}
-
-
-.players {
-  display: grid;
-
-  grid-template-columns:
-    repeat(auto-fit, minmax(180px, 1fr));
-
-  gap: 20px;
-
-  margin-top: 30px;
-}
-
-
-.player-card {
-  padding: 20px;
-
-  background: white;
-
   color: #123524;
-
-  border-radius: 12px;
 }
 
 
-.player-label {
-  display: block;
-
-  font-size: 13px;
-
-  opacity: 0.6;
-}
-
-
-.player-name {
-  display: block;
-
-  margin-top: 5px;
-
-  font-size: 21px;
-}
-
-
-/* =========================
-   GUMB
-========================= */
-
-.start-button {
-  margin-top: 40px;
-
-  padding: 15px 40px;
-
-  border: none;
-
-  border-radius: 10px;
-
-  background: white;
-
-  color: #123524;
-
-  font-size: 16px;
-
-  font-weight: bold;
-
-  cursor: pointer;
-
-  transition: 0.2s;
-}
-
-
-.start-button:hover {
-  transform: translateY(-2px);
-}
-
-
-/* =========================
+/* ==========================================
    REZULTAT
-========================= */
-
-.game-content {
-  margin-top: 40px;
-}
-
+========================================== */
 
 .scoreboard {
-  padding: 25px;
-
-  background: rgba(255, 255, 255, 0.1);
-
-  border-radius: 15px;
+  margin-bottom: 35px;
 }
 
-
 .scoreboard h2 {
-  margin-top: 0;
+  margin: 0 0 18px;
+  font-size: 26px;
+  color: white;
 }
 
 
 .scoreboard-teams {
   display: grid;
-
-  grid-template-columns:
-    repeat(auto-fit, minmax(180px, 1fr));
-
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
-
-  margin-top: 20px;
 }
 
 
 .scoreboard-team {
-  padding: 20px;
-
   background: white;
+  border-radius: 18px;
+  padding: 24px;
 
-  color: #123524;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+
+  transition: transform 0.2s ease;
+}
+
+
+.scoreboard-team:hover {
+  transform: translateY(-3px);
 }
 
 
 .scoreboard-team-name {
-  display: block;
-
-  font-size: 17px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #123524;
 }
 
 
 .score {
-  display: block;
-
-  margin-top: 10px;
-
-  font-size: 42px;
+  font-size: 38px;
+  font-weight: 800;
+  color: #123524;
 }
 
 
-/* =========================
+/* ==========================================
    RUNDE
-========================= */
+========================================== */
 
 .rounds-section {
-  margin-top: 40px;
+  margin-top: 30px;
 }
 
 
 .rounds-header {
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
 
-  gap: 20px;
+  margin-bottom: 20px;
 }
 
 
 .rounds-header h2 {
   margin: 0;
+  font-size: 26px;
+  color: white;
 }
 
 
@@ -237,787 +90,369 @@ h1 {
   padding: 12px 20px;
 
   border: none;
-
-  border-radius: 8px;
+  border-radius: 10px;
 
   background: white;
-
   color: #123524;
 
-  font-weight: bold;
-
+  font-weight: 800;
   cursor: pointer;
+
+  transition: 0.2s ease;
 }
 
 
 .new-round-button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 
 .new-round-button:disabled {
   opacity: 0.5;
-
   cursor: not-allowed;
-}
-
-
-/* =========================
-   NEMA RUNDI
-========================= */
-
-.empty-rounds {
-  margin-top: 20px;
-
-  padding: 30px;
-
-  background: rgba(255, 255, 255, 0.1);
-
-  border-radius: 12px;
-}
-
-
-.empty-rounds p {
-  margin-top: 0;
-}
-
-
-/* =========================
-   FORMA RUNDE
-========================= */
-
-.round-form {
-  margin-top: 25px;
-
-  padding: 30px;
-
-  background: white;
-
-  color: #123524;
-
-  border-radius: 15px;
-
-  text-align: left;
-}
-
-
-.round-form-header {
-  margin-bottom: 25px;
-}
-
-
-.round-form-header h3 {
-  margin: 0;
-
-  font-size: 25px;
-}
-
-
-.form-group {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 8px;
-
-  margin-top: 20px;
-}
-
-
-.form-group label {
-  font-weight: bold;
-}
-
-
-.form-group select,
-.form-group input {
-  width: 100%;
-
-  padding: 12px;
-
-  border: 1px solid #ddd;
-
-  border-radius: 8px;
-
-  font-size: 16px;
-
-  box-sizing: border-box;
-}
-
-
-/* =========================
-   BODOVI
-========================= */
-
-.points-section {
-  margin-top: 25px;
-}
-
-
-.points-section h4 {
-  margin-bottom: 15px;
-}
-
-
-.score-inputs {
-  display: grid;
-
-  grid-template-columns:
-    repeat(auto-fit, minmax(180px, 1fr));
-
-  gap: 20px;
-}
-
-
-.score-input {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 8px;
-}
-
-
-.score-input label {
-  font-weight: bold;
-
-  font-size: 14px;
-}
-
-
-.score-input input {
-  padding: 12px;
-
-  border: 1px solid #ddd;
-
-  border-radius: 8px;
-
-  font-size: 16px;
-}
-
-
-/* =========================
-   BELA / KONTRA
-========================= */
-
-.checkboxes {
-  display: flex;
-
-  gap: 30px;
-
-  margin-top: 25px;
-}
-
-
-.checkbox {
-  display: flex;
-
-  align-items: center;
-
-  gap: 8px;
-
-  cursor: pointer;
-}
-
-
-.checkbox input {
-  width: 18px;
-
-  height: 18px;
-
-  cursor: pointer;
-}
-
-
-/* =========================
-   SPREMI RUNDU
-========================= */
-
-.save-round-button {
-  width: 100%;
-
-  margin-top: 30px;
-
-  padding: 15px;
-
-  border: none;
-
-  border-radius: 10px;
-
-  background: #123524;
-
-  color: white;
-
-  font-weight: bold;
-
-  cursor: pointer;
-
-  transition: 0.2s;
-}
-
-
-.save-round-button:hover {
-  transform: translateY(-1px);
-}
-
-
-.save-round-button:disabled {
-  opacity: 0.5;
-
-  cursor: not-allowed;
-}
-
-
-/* =========================
-   POPIS RUNDI
-========================= */
-
-.round-list {
-  margin-top: 35px;
-
-  text-align: left;
-}
-
-
-.round-list h3 {
-  margin-bottom: 15px;
-}
-
-
-.round-card {
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: center;
-
-  gap: 20px;
-
-  margin-bottom: 10px;
-
-  padding: 18px 20px;
-
-  background: white;
-
-  color: #123524;
-
-  border-radius: 10px;
-
-  cursor: pointer;
-}
-
-
-.round-info {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 5px;
-}
-
-
-.round-info span {
-  font-size: 14px;
-
-  opacity: 0.7;
-}
-
-
-.round-result {
-  font-size: 22px;
-
-  font-weight: bold;
-
-  white-space: nowrap;
-}
-
-
-.round-details {
-  display: flex;
-
-  gap: 6px;
-
-  margin-top: 5px;
-}
-
-
-.badge {
-  padding: 3px 8px;
-
-  border-radius: 5px;
-
-  background: #123524;
-
-  color: white;
-
-  font-size: 12px !important;
-
-  opacity: 1 !important;
-}
-
-
-/* =========================
-   MOBITEL
-========================= */
-
-@media (max-width: 600px) {
-
-  .game-page {
-    padding: 30px 15px;
-  }
-
-
-  h1 {
-    font-size: 42px;
-  }
-
-
-  .teams-preview {
-    grid-template-columns: 1fr;
-  }
-
-
-  .rounds-header {
-    flex-direction: column;
-
-    align-items: stretch;
-  }
-
-
-  .new-round-button {
-    width: 100%;
-  }
-
-
-  .score-inputs {
-    grid-template-columns: 1fr;
-  }
-
-
-  .checkboxes {
-    flex-direction: column;
-
-    gap: 15px;
-  }
-
-
-  .round-card {
-    flex-direction: column;
-
-    align-items: flex-start;
-  }
-
-
-  .round-result {
-    align-self: flex-end;
-  }
-
-}
-
-.game-page {
-  min-height: 100vh;
-
-  display: flex;
-  justify-content: center;
-
-  background: #123524;
-
-  color: white;
-
-  padding: 50px 20px;
-
-  box-sizing: border-box;
-}
-
-
-.game-container {
-  width: 100%;
-
-  max-width: 950px;
-
-  text-align: center;
-}
-
-
-h1 {
-  margin: 0;
-
-  font-size: 56px;
-
-  letter-spacing: 4px;
-}
-
-
-.game-subtitle {
-  margin-top: 5px;
-
-  opacity: 0.8;
-}
-
-
-/* =========================
-   IGRAČI
-========================= */
-
-.setup-section h2 {
-  margin-top: 40px;
-}
-
-
-.teams-preview {
-  display: grid;
-
-  grid-template-columns:
-    repeat(2, 1fr);
-
-  gap: 25px;
-
-  margin-top: 30px;
-}
-
-
-.team-preview {
-  padding: 25px;
-
-  background:
-    rgba(255, 255, 255, 0.1);
-
-  border-radius: 15px;
-}
-
-
-.team-preview h3 {
-  margin-top: 0;
-
-  margin-bottom: 20px;
-
-  font-size: 22px;
-}
-
-
-.players {
-  display: grid;
-
-  grid-template-columns:
-    repeat(auto-fit, minmax(180px, 1fr));
-
-  gap: 20px;
-
-  margin-top: 30px;
-}
-
-
-.player-card {
-  padding: 20px;
-
-  background: white;
-
-  color: #123524;
-
-  border-radius: 12px;
-}
-
-
-.player-label {
-  display: block;
-
-  font-size: 13px;
-
-  opacity: 0.6;
-}
-
-
-.player-name {
-  display: block;
-
-  margin-top: 5px;
-
-  font-size: 21px;
-}
-
-
-/* =========================
-   GUMBOVI
-========================= */
-
-.start-button,
-.new-round-button,
-.save-round-button {
-  border: none;
-
-  border-radius: 10px;
-
-  font-weight: bold;
-
-  cursor: pointer;
-
-  transition: 0.2s;
-}
-
-
-.start-button {
-  margin-top: 40px;
-
-  padding: 15px 40px;
-
-  background: white;
-
-  color: #123524;
-
-  font-size: 16px;
-}
-
-
-.start-button:hover,
-.new-round-button:hover,
-.save-round-button:hover {
-  transform: translateY(-2px);
-}
-
-
-.new-round-button {
-  padding: 12px 20px;
-
-  background: white;
-
-  color: #123524;
-}
-
-
-.new-round-button:disabled,
-.save-round-button:disabled {
-  opacity: 0.5;
-
-  cursor: not-allowed;
-
   transform: none;
 }
 
 
-/* =========================
-   REZULTAT
-========================= */
-
-.game-content {
-  margin-top: 40px;
-}
-
-
-.scoreboard {
-  padding: 25px;
-
-  background:
-    rgba(255, 255, 255, 0.1);
-
-  border-radius: 15px;
-}
-
-
-.scoreboard h2 {
-  margin-top: 0;
-}
-
-
-.scoreboard-teams {
-  display: grid;
-
-  grid-template-columns:
-    repeat(2, 1fr);
-
-  gap: 20px;
-
-  margin-top: 20px;
-}
-
-
-.scoreboard-team {
-  padding: 25px;
-
-  background: white;
-
-  color: #123524;
-
-  border-radius: 12px;
-}
-
-
-.scoreboard-team-name {
-  display: block;
-
-  font-size: 17px;
-}
-
-
-.score {
-  display: block;
-
-  margin-top: 10px;
-
-  font-size: 45px;
-}
-
-
-/* =========================
-   RUNDE
-========================= */
-
-.rounds-section {
-  margin-top: 40px;
-}
-
-
-.rounds-header {
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: center;
-
-  gap: 20px;
-}
-
-
-.rounds-header h2 {
-  margin: 0;
-}
-
+/* ==========================================
+   PRAZNE RUNDE
+========================================== */
 
 .empty-rounds {
-  margin-top: 20px;
+  background: white;
 
-  padding: 30px;
+  border-radius: 18px;
 
-  background:
-    rgba(255, 255, 255, 0.1);
+  padding: 40px;
 
-  border-radius: 12px;
+  text-align: center;
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 
-/* =========================
+.empty-rounds p {
+  margin: 0 0 22px;
+
+  color: #666;
+}
+
+
+.empty-rounds .new-round-button {
+  background: #123524;
+  color: white;
+}
+
+
+/* ==========================================
    FORMA RUNDE
-========================= */
+========================================== */
 
 .round-form {
-  margin-top: 25px;
+  background: white;
+
+  border-radius: 18px;
 
   padding: 30px;
 
-  background: white;
-
-  color: #123524;
-
-  border-radius: 15px;
-
-  text-align: left;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
 }
 
 
 .round-form h3 {
-  margin-top: 0;
+  margin: 0 0 28px;
 
-  font-size: 25px;
+  font-size: 24px;
+
+  color: #123524;
 }
 
 
 .form-group {
+  margin-bottom: 22px;
+}
+
+
+.form-group label,
+.score-input label,
+.bid-player label,
+.bid-points label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  color: #123524;
+}
+
+
+select,
+input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 12px 14px;
+
+  border: 1px solid #d2d2d2;
+  border-radius: 9px;
+
+  background: white;
+
+  color: #222;
+
+  font-size: 15px;
+
+  transition: border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+
+select:focus,
+input:focus {
+  outline: none;
+
+  border-color: #123524;
+
+  box-shadow: 0 0 0 3px rgba(18, 53, 36, 0.12);
+}
+
+
+/* ==========================================
+   ZVANJA
+========================================== */
+
+.bids-section {
+  margin-top: 32px;
+}
+
+
+.bids-header {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-  flex-direction: column;
+  margin-bottom: 16px;
+}
 
-  gap: 8px;
+
+.bids-header h4 {
+  margin: 0;
+
+  font-size: 19px;
+
+  color: #123524;
+}
+
+
+.add-bid-button {
+  padding: 9px 15px;
+
+  border: 1px solid #123524;
+  border-radius: 8px;
+
+  background: white;
+  color: #123524;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+.add-bid-button:hover {
+  background: #123524;
+  color: white;
+}
+
+
+.no-bids {
+  padding: 15px;
+
+  border-radius: 9px;
+
+  background: #f4f6f4;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+
+.bid-row {
+  display: grid;
+
+  grid-template-columns: 1fr 150px 44px;
+
+  gap: 12px;
+
+  align-items: end;
+
+  margin-bottom: 15px;
+}
+
+
+.remove-bid-button {
+  width: 44px;
+  height: 44px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #eeeeee;
+
+  color: #555;
+
+  font-size: 22px;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+
+.remove-bid-button:hover {
+  background: #dedede;
+}
+
+
+/* ==========================================
+   ZBROJ ZVANJA
+========================================== */
+
+.bid-summary {
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 15px;
 
   margin-top: 20px;
 }
 
 
-.form-group label {
-  font-weight: bold;
+.bid-summary > div {
+  padding: 16px;
+
+  border-radius: 11px;
+
+  background: #f3f6f3;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 
-.form-group select,
-.form-group input {
-  width: 100%;
-
-  padding: 12px;
-
-  border: 1px solid #ddd;
-
-  border-radius: 8px;
-
-  font-size: 16px;
-
-  box-sizing: border-box;
+.bid-summary span {
+  font-weight: 600;
+  color: #555;
 }
 
 
-/* =========================
+.bid-summary strong {
+  font-size: 21px;
+  color: #123524;
+}
+
+
+/* ==========================================
    BODOVI
-========================= */
+========================================== */
 
 .points-section {
-  margin-top: 25px;
+  margin-top: 35px;
 }
 
 
 .points-section h4 {
-  margin-bottom: 15px;
+  margin: 0 0 18px;
+
+  font-size: 19px;
+
+  color: #123524;
 }
 
 
 .score-inputs {
   display: grid;
 
-  grid-template-columns:
-    repeat(2, 1fr);
+  grid-template-columns: repeat(2, 1fr);
 
   gap: 20px;
 }
 
 
 .score-input {
-  display: flex;
+  padding: 20px;
 
-  flex-direction: column;
+  border: 1px solid #ddd;
 
-  gap: 8px;
-}
+  border-radius: 13px;
 
-
-.score-input label {
-  font-weight: bold;
+  background: #fafafa;
 }
 
 
 .score-input input {
-  padding: 12px;
-
-  border: 1px solid #ddd;
-
-  border-radius: 8px;
-
-  font-size: 18px;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 
-/* =========================
+.score-input small {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #777;
+
+  font-size: 12px;
+}
+
+
+.points-total {
+  margin-top: 15px;
+
+  padding: 14px 16px;
+
+  border-radius: 10px;
+
+  background: #f3f6f3;
+
+  display: flex;
+  justify-content: space-between;
+
+  font-weight: 700;
+
+  color: #123524;
+}
+
+
+/* ==========================================
    PREGLED RUNDE
-========================= */
+========================================== */
 
 .round-summary {
-  margin-top: 25px;
+  margin-top: 30px;
 
   padding: 20px;
 
-  background: #f3f3f3;
+  border-radius: 13px;
 
-  border-radius: 10px;
+  background: #f5f6f5;
 }
 
 
 .round-summary h4 {
-  margin-top: 0;
+  margin: 0 0 15px;
+
+  color: #123524;
 }
 
 
@@ -1026,7 +461,7 @@ h1 {
 
   justify-content: space-between;
 
-  padding: 8px 0;
+  padding: 10px 0;
 
   border-bottom: 1px solid #ddd;
 }
@@ -1037,38 +472,121 @@ h1 {
 }
 
 
-/* =========================
-   SPREMI
-========================= */
+.summary-row span {
+  color: #666;
+}
+
+
+.summary-row strong {
+  color: #123524;
+}
+
+
+/* ==========================================
+   STATUS RUNDE
+========================================== */
+
+.round-status {
+  margin-top: 22px;
+
+  padding: 18px;
+
+  border-radius: 12px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.success-status {
+  background: #eaf5ed;
+
+  border: 1px solid #b8d5bf;
+
+  color: #123524;
+}
+
+
+.failed-status {
+  background: #fbeaea;
+
+  border: 1px solid #e0bcbc;
+
+  color: #8b1e1e;
+}
+
+
+.round-status strong {
+  font-size: 20px;
+}
+
+
+/* ==========================================
+   SPREMI RUNDU
+========================================== */
 
 .save-round-button {
   width: 100%;
 
-  margin-top: 30px;
+  margin-top: 25px;
 
   padding: 15px;
+
+  border: none;
+
+  border-radius: 10px;
 
   background: #123524;
 
   color: white;
 
-  font-size: 16px;
+  font-size: 15px;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
 }
 
 
-/* =========================
-   POPIS RUNDI
-========================= */
+.save-round-button:hover {
+  background: #1b4d34;
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+
+.save-round-button:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+
+/* ==========================================
+   ODIGRANE RUNDE
+========================================== */
 
 .round-list {
   margin-top: 35px;
-
-  text-align: left;
 }
 
 
 .round-list h3 {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
+
+  color: white;
+
+  font-size: 23px;
 }
 
 
@@ -1079,17 +597,15 @@ h1 {
 
   align-items: center;
 
-  gap: 20px;
-
-  margin-bottom: 10px;
-
   padding: 20px;
+
+  margin-bottom: 12px;
 
   background: white;
 
-  color: #123524;
+  border-radius: 14px;
 
-  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
 
@@ -1099,64 +615,73 @@ h1 {
   flex-direction: column;
 
   gap: 5px;
+
+  color: #666;
 }
 
 
-.round-info span {
-  font-size: 14px;
+.round-info strong {
+  color: #123524;
 
-  opacity: 0.75;
+  font-size: 17px;
 }
 
 
 .round-result {
-  font-size: 24px;
+  font-size: 27px;
 
-  font-weight: bold;
+  font-weight: 800;
 
-  white-space: nowrap;
+  color: #123524;
 }
 
 
 .failed {
-  font-weight: bold;
+  margin-top: 5px;
 
-  opacity: 1 !important;
+  font-weight: 700;
+
+  color: #b00020;
 }
 
 
-/* =========================
+/* ==========================================
    MOBITEL
-========================= */
+========================================== */
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
 
-  .game-page {
-    padding: 30px 15px;
-  }
-
-
-  h1 {
-    font-size: 42px;
-  }
-
-
-  .teams-preview,
-  .score-inputs,
   .scoreboard-teams {
     grid-template-columns: 1fr;
+  }
+
+
+  .score-inputs {
+    grid-template-columns: 1fr;
+  }
+
+
+  .bid-summary {
+    grid-template-columns: 1fr;
+  }
+
+
+  .bid-row {
+    grid-template-columns: 1fr;
+  }
+
+
+  .remove-bid-button {
+    width: 100%;
   }
 
 
   .rounds-header {
     flex-direction: column;
 
-    align-items: stretch;
-  }
+    align-items: flex-start;
 
-
-  .new-round-button {
-    width: 100%;
+    gap: 15px;
   }
 
 
@@ -1164,6 +689,8 @@ h1 {
     flex-direction: column;
 
     align-items: flex-start;
+
+    gap: 15px;
   }
 
 
@@ -1173,146 +700,170 @@ h1 {
 
 }
 
-.bids-section {
+
+/* ==========================================
+   TRENUTNI IZRAČUN - TABLICA
+========================================== */
+
+.current-calculation {
   margin-top: 30px;
+  padding: 24px;
+
+  background: white;
+
+  border-radius: 16px;
+
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
-.bids-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
+
+.current-calculation h3 {
+  margin: 0 0 20px;
+
+  font-size: 20px;
+
+  color: #123524;
 }
 
-.bids-header h4 {
-  margin: 0;
-}
 
-.add-bid-button {
-  padding: 9px 14px;
+/* TABLICA */
 
-  border: none;
-  border-radius: 7px;
-
-  background: #123524;
-  color: white;
-
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.no-bids {
-  margin-top: 15px;
-
-  padding: 15px;
-
-  background: #f3f3f3;
-
-  border-radius: 8px;
-
-  color: #666;
-}
-
-.bid-row {
-  display: grid;
-
-  grid-template-columns: 1fr 150px auto;
-
-  gap: 15px;
-
-  align-items: end;
-
-  margin-top: 15px;
-}
-
-.bid-player,
-.bid-points {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 7px;
-}
-
-.bid-player label,
-.bid-points label {
-  font-weight: bold;
-}
-
-.bid-player select,
-.bid-points input {
-  padding: 11px;
+.calculation-table {
+  width: 100%;
 
   border: 1px solid #ddd;
 
-  border-radius: 8px;
+  border-radius: 12px;
 
-  font-size: 15px;
+  overflow: hidden;
 }
 
-.remove-bid-button {
-  width: 40px;
-  height: 40px;
 
-  border: none;
-
-  border-radius: 8px;
-
-  background: #ddd;
-
-  color: #333;
-
-  font-size: 24px;
-
-  cursor: pointer;
-}
-
-.remove-bid-button:hover {
-  background: #bbb;
-}
-
-.bid-summary {
+.table-row {
   display: grid;
 
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns:
+    minmax(180px, 2fr)
+    1fr
+    1fr
+    1fr;
 
-  gap: 15px;
+  align-items: center;
 
-  margin-top: 20px;
+  min-height: 55px;
+
+  border-bottom: 1px solid #e1e1e1;
+
+  text-align: center;
+
+  color: #555;
 }
 
-.bid-summary div {
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+
+/* ZAGLAVLJE */
+
+.table-header {
+  background: #123524;
+
+  color: white;
+
+  font-weight: 700;
+
+  min-height: 48px;
+}
+
+
+.table-header > div:first-child {
+  text-align: left;
+
+  padding-left: 18px;
+}
+
+
+/* IME EKIPE */
+
+.team-name {
+  text-align: left;
+
+  padding-left: 18px;
+
+  font-weight: 700;
+
+  color: #123524;
+}
+
+
+/* UKUPNO */
+
+.table-total {
+  font-size: 18px;
+
+  font-weight: 800;
+
+  color: #123524;
+}
+
+
+/* DONJI ZBROJ */
+
+.calculation-total {
   display: flex;
 
   justify-content: space-between;
 
-  padding: 12px 15px;
+  align-items: center;
 
-  background: #f3f3f3;
-
-  border-radius: 8px;
-}
-
-.points-total {
   margin-top: 15px;
 
-  text-align: right;
+  padding: 15px 18px;
 
-  font-size: 16px;
+  border-radius: 10px;
+
+  background: #f3f6f3;
+
+  color: #555;
 }
+
+
+.calculation-total strong {
+  color: #123524;
+
+  font-size: 18px;
+}
+
+
+/* MOBITEL */
 
 @media (max-width: 600px) {
 
-  .bid-row {
-    grid-template-columns: 1fr;
+  .current-calculation {
+    padding: 15px;
   }
 
-  .remove-bid-button {
-    width: 100%;
+
+  .table-row {
+    grid-template-columns:
+      minmax(130px, 2fr)
+      1fr
+      1fr
+      1fr;
+
+    font-size: 13px;
   }
 
-  .bid-summary {
-    grid-template-columns: 1fr;
+
+  .team-name {
+    padding-left: 10px;
+  }
+
+
+  .table-header > div:first-child {
+    padding-left: 10px;
   }
 
 }

@@ -1,6 +1,10 @@
 
-import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {
+  Component,
+  inject,
+  OnInit,
+  ChangeDetectorRef
+} from '@angular/core';import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { FourPlayer } from './four-player/four-player';
 
@@ -21,6 +25,8 @@ export class Game implements OnInit {
   private route = inject(ActivatedRoute);
 
   private authService = inject(AuthService);
+
+  private cdr = inject(ChangeDetectorRef);
 
 
   players: GamePlayer[] = [];
@@ -76,6 +82,8 @@ export class Game implements OnInit {
                   (player): player is GamePlayer =>
                     player !== null
                 );
+
+            this.cdr.detectChanges();
 
             console.log('IGRAČI:', this.players);
             console.log('BROJ IGRAČA:', this.players.length);

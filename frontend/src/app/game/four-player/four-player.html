@@ -1,10 +1,9 @@
+<div class="four-player-game">
 
-<div class="game-content">
 
-
-  <!-- =========================
+  <!-- ==========================================
        REZULTAT
-  ========================== -->
+  =========================================== -->
 
   <section class="scoreboard">
 
@@ -37,9 +36,10 @@
   </section>
 
 
-  <!-- =========================
+
+  <!-- ==========================================
        RUNDE
-  ========================== -->
+  =========================================== -->
 
   <section class="rounds-section">
 
@@ -47,6 +47,7 @@
     <div class="rounds-header">
 
       <h2>Runde</h2>
+
 
       <button
         class="new-round-button"
@@ -59,9 +60,8 @@
     </div>
 
 
-    <!-- =========================
-         NEMA RUNDI
-    ========================== -->
+
+    <!-- NEMA RUNDI -->
 
     @if (
       rounds.length === 0 &&
@@ -87,20 +87,25 @@
     }
 
 
-    <!-- =========================
+
+    <!-- ==========================================
          NOVA RUNDA
-    ========================== -->
+    =========================================== -->
 
     @if (currentRound) {
 
       <div class="round-form">
+
 
         <h3>
           Runda {{ currentRound.number }}
         </h3>
 
 
-        <!-- TKO JE ZVAO -->
+
+        <!-- ======================================
+             TKO JE ZVAO
+        ======================================= -->
 
         <div class="form-group">
 
@@ -108,8 +113,11 @@
             Tko je zvao?
           </label>
 
+
           <select
-            [(ngModel)]="currentRound.caller"
+            [(ngModel)]="
+              currentRound.caller
+            "
           >
 
             <option value="">
@@ -142,7 +150,10 @@
         </div>
 
 
-        <!-- ADUT -->
+
+        <!-- ======================================
+             ADUT
+        ======================================= -->
 
         <div class="form-group">
 
@@ -150,25 +161,32 @@
             Adut
           </label>
 
+
           <select
-            [(ngModel)]="currentRound.trump"
+            [(ngModel)]="
+              currentRound.trump
+            "
           >
 
             <option value="">
               Odaberite adut
             </option>
 
+
             <option value="Žir">
               Žir
             </option>
+
 
             <option value="Srce">
               Srce
             </option>
 
+
             <option value="Bundeva">
               Bundeva
             </option>
+
 
             <option value="List">
               List
@@ -179,9 +197,10 @@
         </div>
 
 
-        <!-- =========================
+
+        <!-- ======================================
              ZVANJA
-        ========================== -->
+        ======================================= -->
 
         <div class="bids-section">
 
@@ -204,6 +223,7 @@
           </div>
 
 
+
           @if (
             currentRound.bids.length === 0
           ) {
@@ -215,6 +235,7 @@
           }
 
 
+
           @for (
             bid of currentRound.bids;
             track $index
@@ -222,8 +243,6 @@
 
             <div class="bid-row">
 
-
-              <!-- IGRAČ -->
 
               <div class="bid-player">
 
@@ -233,8 +252,12 @@
 
 
                 <select
-                  [(ngModel)]="bid.player"
-                  (ngModelChange)="calculateBids()"
+                  [(ngModel)]="
+                    bid.player
+                  "
+                  (ngModelChange)="
+                    calculateBids()
+                  "
                 >
 
                   <option value="">
@@ -253,7 +276,9 @@
                     ) {
 
                       <option
-                        [value]="player.username"
+                        [value]="
+                          player.username
+                        "
                       >
                         {{ player.username }}
                       </option>
@@ -267,7 +292,6 @@
               </div>
 
 
-              <!-- BODOVI -->
 
               <div class="bid-points">
 
@@ -279,19 +303,24 @@
                 <input
                   type="number"
                   min="1"
-                  [(ngModel)]="bid.points"
-                  (ngModelChange)="calculateBids()"
+                  [(ngModel)]="
+                    bid.points
+                  "
+                  (ngModelChange)="
+                    calculateBids()
+                  "
                 />
 
               </div>
 
 
-              <!-- BRISANJE -->
 
               <button
                 type="button"
                 class="remove-bid-button"
-                (click)="removeBid($index)"
+                (click)="
+                  removeBid($index)
+                "
               >
                 ×
               </button>
@@ -301,7 +330,6 @@
           }
 
 
-          <!-- ZBROJ ZVANJA -->
 
           @if (
             currentRound.bids.length > 0
@@ -316,6 +344,7 @@
                   Zvanja Tim 1
                 </span>
 
+
                 <strong>
                   {{ currentRound.team1Bids }}
                 </strong>
@@ -329,12 +358,12 @@
                   Zvanja Tim 2
                 </span>
 
+
                 <strong>
                   {{ currentRound.team2Bids }}
                 </strong>
 
               </div>
-
 
             </div>
 
@@ -343,9 +372,10 @@
         </div>
 
 
-        <!-- =========================
+
+        <!-- ======================================
              BODOVI
-        ========================== -->
+        ======================================= -->
 
         <div class="points-section">
 
@@ -354,12 +384,23 @@
           </h4>
 
 
+          <p class="points-help">
+            Unesite bodove za bilo koji tim.
+            Bodovi drugog tima automatski će se izračunati.
+          </p>
+
+
           <div class="score-inputs">
 
 
             <!-- TIM 1 -->
 
-            <div class="score-input">
+            <div
+              class="score-input"
+              [class.automatic]="
+                manualTeam === 1
+              "
+            >
 
               <label>
                 {{ getTeamPlayerNames(0) }}
@@ -373,14 +414,32 @@
                 [(ngModel)]="
                   currentRound.team1Points
                 "
+                (ngModelChange)="
+                  updateTeam1Points()
+                "
               />
+
+
+              @if (manualTeam === 1) {
+
+                <small>
+                  Automatski izračunato
+                </small>
+
+              }
 
             </div>
 
 
+
             <!-- TIM 2 -->
 
-            <div class="score-input">
+            <div
+              class="score-input"
+              [class.automatic]="
+                manualTeam === 0
+              "
+            >
 
               <label>
                 {{ getTeamPlayerNames(1) }}
@@ -394,7 +453,19 @@
                 [(ngModel)]="
                   currentRound.team2Points
                 "
+                (ngModelChange)="
+                  updateTeam2Points()
+                "
               />
+
+
+              @if (manualTeam === 0) {
+
+                <small>
+                  Automatski izračunato
+                </small>
+
+              }
 
             </div>
 
@@ -402,115 +473,180 @@
           </div>
 
 
-          <p class="points-total">
 
-            Ukupno:
+          <div class="points-total">
+
+            <span>
+              Bodovi iz igre:
+            </span>
+
 
             <strong>
 
               {{
-                currentRound.team1Points +
-                currentRound.team2Points
+                getTeam1Preview() +
+                getTeam2Preview()
               }}
 
               / 162
 
             </strong>
 
-          </p>
+          </div>
 
         </div>
 
 
-        <!-- =========================
-             PREGLED
-        ========================== -->
 
-        <div class="round-summary">
+        <!-- ==========================================
+            TRENUTNI IZRAČUN
+        ========================================== -->
 
-          <h4>
-            Pregled runde
-          </h4>
+        <div class="current-calculation">
+
+        <h3>Trenutni izračun</h3>
+
+        <div class="calculation-table">
+
+            <div class="table-row table-header">
+
+            <div>Ekipa</div>
+            <div>Bodovi</div>
+            <div>Zvanja</div>
+            <div>Ukupno</div>
+
+            </div>
 
 
-          <div class="summary-row">
+            <!-- TIM 1 -->
+
+            <div class="table-row">
+
+            <div class="team-name">
+                {{ getTeamPlayerNames(0) }}
+            </div>
+
+            <div>
+                {{ currentRound.team1Points }}
+            </div>
+
+            <div>
+                {{ currentRound.team1Bids }}
+            </div>
+
+            <div class="table-total">
+                {{ currentRound.team1Points + currentRound.team1Bids }}
+            </div>
+
+            </div>
+
+
+            <!-- TIM 2 -->
+
+            <div class="table-row">
+
+            <div class="team-name">
+                {{ getTeamPlayerNames(1) }}
+            </div>
+
+            <div>
+                {{ currentRound.team2Points }}
+            </div>
+
+            <div>
+                {{ currentRound.team2Bids }}
+            </div>
+
+            <div class="table-total">
+                {{ currentRound.team2Points + currentRound.team2Bids }}
+            </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- UKUPNO -->
+
+        <div class="calculation-total">
 
             <span>
-              {{ getTeamPlayerNames(0) }}
+            Ukupno bodova u igri
             </span>
 
             <strong>
-
-              {{
+            {{
                 currentRound.team1Points +
-                currentRound.team1Bids
-              }}
-
+                currentRound.team2Points
+            }}
+            / 162
             </strong>
 
-          </div>
-
-
-          <div class="summary-row">
-
-            <span>
-              {{ getTeamPlayerNames(1) }}
-            </span>
-
-            <strong>
-
-              {{
-                currentRound.team2Points +
-                currentRound.team2Bids
-              }}
-
-            </strong>
-
-          </div>
-
-
-          <div class="summary-row">
-
-            <span>
-              Ukupno zvanja
-            </span>
-
-            <strong>
-
-              {{
-                currentRound.team1Bids +
-                currentRound.team2Bids
-              }}
-
-            </strong>
-
-          </div>
-
-
-          <div class="summary-row">
-
-            <span>
-              Ukupno bodova u rundi
-            </span>
-
-            <strong>
-
-              162 +
-              {{
-                currentRound.team1Bids +
-                currentRound.team2Bids
-              }}
-
-            </strong>
-
-          </div>
+        </div>
 
         </div>
 
 
-        <!-- =========================
+
+
+        <!-- ======================================
+             PROLAZ / PAD
+        ======================================= -->
+
+        @if (
+          currentRound.caller !== ''
+        ) {
+
+          <div
+            class="round-status"
+            [class.failed-status]="
+              getRoundStatus() === 'PAD'
+            "
+            [class.success-status]="
+              getRoundStatus() === 'PROŠAO'
+            "
+          >
+
+            @if (
+              getRoundStatus() === 'PAD'
+            ) {
+
+              <strong>
+                PAD
+              </strong>
+
+              <span>
+                Ekipa koja je zvala nema više
+                od polovice ukupnih bodova.
+              </span>
+
+            }
+
+
+            @if (
+              getRoundStatus() === 'PROŠAO'
+            ) {
+
+              <strong>
+                PROŠAO
+              </strong>
+
+              <span>
+                Ekipa koja je zvala ima više
+                od polovice ukupnih bodova.
+              </span>
+
+            }
+
+          </div>
+
+        }
+
+
+
+        <!-- ======================================
              SPREMI
-        ========================== -->
+        ======================================= -->
 
         <button
           class="save-round-button"
@@ -523,22 +659,26 @@
           SPREMI RUNDU
         </button>
 
+
       </div>
 
     }
 
 
-    <!-- =========================
+
+    <!-- ==========================================
          ODIGRANE RUNDE
-    ========================== -->
+    =========================================== -->
 
     @if (rounds.length > 0) {
 
       <div class="round-list">
 
+
         <h3>
           Odigrane runde
         </h3>
+
 
 
         @for (
@@ -550,6 +690,7 @@
 
 
             <div class="round-info">
+
 
               <strong>
                 Runda {{ round.number }}
@@ -569,24 +710,26 @@
 
 
               <span>
-                Zvanja
-                {{ getTeamPlayerNames(0) }}:
-                {{ round.team1Bids }}
+                Bodovi:
+                {{ round.team1Points }}
+                :
+                {{ round.team2Points }}
               </span>
 
 
               <span>
-                Zvanja
-                {{ getTeamPlayerNames(1) }}:
+                Zvanja:
+                {{ round.team1Bids }}
+                :
                 {{ round.team2Bids }}
               </span>
 
 
               <span>
-                Bodovi:
-                {{ round.team1Points }}
+                Ukupno:
+                {{ round.team1Total }}
                 :
-                {{ round.team2Points }}
+                {{ round.team2Total }}
               </span>
 
 
@@ -599,6 +742,7 @@
               }
 
             </div>
+
 
 
             <div class="round-result">
@@ -623,4 +767,3 @@
   </section>
 
 </div>
-

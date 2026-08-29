@@ -1,4 +1,3 @@
-
 import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -55,6 +54,15 @@ export class FourPlayer {
 
   currentRound: Round | null = null;
 
+  /*
+    Tim koji je zadnji ručno unosio bodove.
+
+    0 = Tim 1
+    1 = Tim 2
+    null = ništa još nije uneseno
+  */
+  manualTeam: 0 | 1 | null = null;
+
 
   ngOnInit() {
 
@@ -62,6 +70,10 @@ export class FourPlayer {
 
   }
 
+
+  // ==========================================
+  // TIMOVI
+  // ==========================================
 
   createTeams() {
 
@@ -91,6 +103,10 @@ export class FourPlayer {
 
   }
 
+
+  // ==========================================
+  // NOVA RUNDA
+  // ==========================================
 
   openNewRound() {
 
@@ -125,8 +141,80 @@ export class FourPlayer {
 
     };
 
+    this.manualTeam = null;
+
   }
 
+
+  // ==========================================
+  // BODOVI
+  // ==========================================
+
+  updateTeam1Points() {
+
+    if (!this.currentRound) {
+      return;
+    }
+
+    this.manualTeam = 0;
+
+    let points =
+      Number(this.currentRound.team1Points);
+
+    if (isNaN(points)) {
+      points = 0;
+    }
+
+    if (points < 0) {
+      points = 0;
+    }
+
+    if (points > 162) {
+      points = 162;
+    }
+
+    this.currentRound.team1Points = points;
+
+    this.currentRound.team2Points =
+      162 - points;
+
+  }
+
+
+  updateTeam2Points() {
+
+    if (!this.currentRound) {
+      return;
+    }
+
+    this.manualTeam = 1;
+
+    let points =
+      Number(this.currentRound.team2Points);
+
+    if (isNaN(points)) {
+      points = 0;
+    }
+
+    if (points < 0) {
+      points = 0;
+    }
+
+    if (points > 162) {
+      points = 162;
+    }
+
+    this.currentRound.team2Points = points;
+
+    this.currentRound.team1Points =
+      162 - points;
+
+  }
+
+
+  // ==========================================
+  // ZVANJA
+  // ==========================================
 
   addBid() {
 
@@ -151,7 +239,10 @@ export class FourPlayer {
       return;
     }
 
-    this.currentRound.bids.splice(index, 1);
+    this.currentRound.bids.splice(
+      index,
+      1
+    );
 
     this.calculateBids();
 
@@ -169,7 +260,9 @@ export class FourPlayer {
     let team2Bids = 0;
 
 
-    for (const bid of this.currentRound.bids) {
+    for (
+      const bid of this.currentRound.bids
+    ) {
 
       const team =
         this.getTeamIndexByPlayer(
@@ -204,6 +297,172 @@ export class FourPlayer {
   }
 
 
+  // ==========================================
+  // PREGLED BODOVA
+  // ==========================================
+
+  getTeam1Preview() {
+
+    if (!this.currentRound) {
+      return 0;
+    }
+
+    return (
+      Number(
+        this.currentRound.team1Points
+      ) || 0
+    );
+
+  }
+
+
+  getTeam2Preview() {
+
+    if (!this.currentRound) {
+      return 0;
+    }
+
+    return (
+      Number(
+        this.currentRound.team2Points
+      ) || 0
+    );
+
+  }
+
+
+  getTeam1TotalPreview() {
+
+    if (!this.currentRound) {
+      return 0;
+    }
+
+    return (
+      this.getTeam1Preview() +
+      this.currentRound.team1Bids
+    );
+
+  }
+
+
+  getTeam2TotalPreview() {
+
+    if (!this.currentRound) {
+      return 0;
+    }
+
+    return (
+      this.getTeam2Preview() +
+      this.currentRound.team2Bids
+    );
+
+  }
+
+
+  getTotalRoundPoints() {
+
+    if (!this.currentRound) {
+      return 162;
+    }
+
+    return (
+      162 +
+      this.currentRound.team1Bids +
+      this.currentRound.team2Bids
+    );
+
+  }
+
+
+  getCallerTeam(): number {
+
+    if (!this.currentRound) {
+      return -1;
+    }
+
+    return this.getTeamIndexByPlayer(
+      this.currentRound.caller
+    );
+
+  }
+
+
+  // ==========================================
+  // PROLAZ / PAD
+  // ==========================================
+
+  getRoundStatus(): string {
+
+    if (!this.currentRound) {
+      return '';
+    }
+
+    const callerTeam =
+      this.getCallerTeam();
+
+
+    if (callerTeam === -1) {
+      return '';
+    }
+
+
+    const totalPoints =
+      this.getTotalRoundPoints();
+
+
+    let callerTotal = 0;
+
+
+    if (callerTeam === 0) {
+
+      callerTotal =
+        this.getTeam1TotalPreview();
+
+    }
+
+    else {
+
+      callerTotal =
+        this.getTeam2TotalPreview();
+
+    }
+
+
+    /*
+      Ekipa koja je zvala mora
+      imati VIŠE od polovice ukupnih
+      bodova u igri.
+
+      Primjer:
+
+      162 + 20 zvanja = 182
+
+      polovica = 91
+
+      91 ili manje = PAD
+      92 ili više = PROŠAO
+    */
+
+    const half =
+      totalPoints / 2;
+
+
+    if (callerTotal <= half) {
+
+      return 'PAD';
+
+    }
+
+
+    return 'PROŠAO';
+
+  }
+
+
+  // ==========================================
+  // SPREMANJE RUNDE
+  // ==========================================
+
   saveRound() {
 
     if (!this.currentRound) {
@@ -212,14 +471,16 @@ export class FourPlayer {
 
 
     /*
-      Tko je zvao i adut
-      moraju biti odabrani.
+      Tko je zvao mora biti odabran.
     */
 
     if (
-      this.currentRound.caller === '' ||
-      this.currentRound.trump === ''
+      this.currentRound.caller === ''
     ) {
+
+      alert(
+        'Odaberite igrača koji je zvao.'
+      );
 
       return;
 
@@ -227,8 +488,24 @@ export class FourPlayer {
 
 
     /*
-      Bodovi iz igre
-      moraju ukupno biti 162.
+      Adut mora biti odabran.
+    */
+
+    if (
+      this.currentRound.trump === ''
+    ) {
+
+      alert(
+        'Odaberite adut.'
+      );
+
+      return;
+
+    }
+
+
+    /*
+      Bodovi moraju biti između 0 i 162.
     */
 
     const team1Points =
@@ -241,6 +518,27 @@ export class FourPlayer {
         this.currentRound.team2Points
       ) || 0;
 
+
+    if (
+      team1Points < 0 ||
+      team1Points > 162 ||
+      team2Points < 0 ||
+      team2Points > 162
+    ) {
+
+      alert(
+        'Bodovi moraju biti između 0 i 162.'
+      );
+
+      return;
+
+    }
+
+
+    /*
+      Mora biti točno 162 bodova
+      iz same igre.
+    */
 
     if (
       team1Points +
@@ -271,9 +569,8 @@ export class FourPlayer {
 
 
     /*
-      Ukupno bodova u rundi:
-
-      162 + sva zvanja
+      Ukupno bodova u ovoj rundi
+      uključujući zvanja.
     */
 
     const totalRoundPoints =
@@ -283,7 +580,7 @@ export class FourPlayer {
 
 
     /*
-      Utvrđujemo ekipu koja je zvala.
+      Ekipa koja je zvala.
     */
 
     const callerTeam =
@@ -292,35 +589,68 @@ export class FourPlayer {
       );
 
 
+    if (
+      callerTeam !== 0 &&
+      callerTeam !== 1
+    ) {
+
+      return;
+
+    }
+
+
+    /*
+      Bodovi ekipe koja je zvala
+      uključujući njezina zvanja.
+    */
+
+    const callerPoints =
+      callerTeam === 0
+        ? team1Points + team1Bids
+        : team2Points + team2Bids;
+
+
+    /*
+      Mora imati VIŠE od polovice.
+
+      Npr.:
+      162 + 20 = 182
+
+      polovica = 91
+
+      91 = PAD
+      92 = PROŠAO
+    */
+
+    const half =
+      totalRoundPoints / 2;
+
+
+    const failed =
+      callerPoints <= half;
+
+
     let team1Total = 0;
 
     let team2Total = 0;
 
-    let failed = false;
-
 
     /*
-      TIM 1 JE ZVAO
+      AKO JE EKIPA KOJA JE ZVALA PALA
     */
 
-    if (callerTeam === 0) {
-
-      const callerPoints =
-        team1Points +
-        team1Bids;
-
-
-      const half =
-        totalRoundPoints / 2;
-
+    if (failed) {
 
       /*
-        Mora imati VIŠE od polovice.
+        Ekipa koja je zvala dobiva 0.
+
+        Protivnička ekipa dobiva
+        SVE BODOVE IZ RUNDE:
+
+        162 + sva zvanja
       */
 
-      if (callerPoints <= half) {
-
-        failed = true;
+      if (callerTeam === 0) {
 
         team1Total = 0;
 
@@ -331,42 +661,6 @@ export class FourPlayer {
 
       else {
 
-        team1Total =
-          team1Points +
-          team1Bids;
-
-        team2Total =
-          team2Points +
-          team2Bids;
-
-      }
-
-    }
-
-
-    /*
-      TIM 2 JE ZVAO
-    */
-
-    else if (callerTeam === 1) {
-
-      const callerPoints =
-        team2Points +
-        team2Bids;
-
-
-      const half =
-        totalRoundPoints / 2;
-
-
-      /*
-        Mora imati VIŠE od polovice.
-      */
-
-      if (callerPoints <= half) {
-
-        failed = true;
-
         team2Total = 0;
 
         team1Total =
@@ -374,17 +668,22 @@ export class FourPlayer {
 
       }
 
-      else {
+    }
 
-        team2Total =
-          team2Points +
-          team2Bids;
 
-        team1Total =
-          team1Points +
-          team1Bids;
+    /*
+      AKO JE EKIPA PROŠLA
+    */
 
-      }
+    else {
+
+      team1Total =
+        team1Points +
+        team1Bids;
+
+      team2Total =
+        team2Points +
+        team2Bids;
 
     }
 
@@ -439,7 +738,7 @@ export class FourPlayer {
 
 
     /*
-      Ažuriramo ukupni rezultat.
+      Dodajemo bodove ukupnom rezultatu.
     */
 
     this.teams[0].score +=
@@ -455,8 +754,14 @@ export class FourPlayer {
 
     this.currentRound = null;
 
+    this.manualTeam = null;
+
   }
 
+
+  // ==========================================
+  // POMOĆNE FUNKCIJE
+  // ==========================================
 
   getTeamIndexByPlayer(
     username: string
@@ -491,19 +796,23 @@ export class FourPlayer {
     teamIndex: number
   ): string {
 
-    if (!this.teams[teamIndex]) {
+    if (
+      !this.teams[teamIndex]
+    ) {
+
       return '';
+
     }
 
 
     return this.teams[teamIndex]
       .players
       .map(
-        player => player.username
+        player =>
+          player.username
       )
       .join(' + ');
 
   }
 
 }
-
