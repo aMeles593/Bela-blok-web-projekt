@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth';
+import { Router } from '@angular/router';
 
 interface PlayerSlot {
   id: number;
@@ -18,6 +19,7 @@ interface PlayerSlot {
 export class Players implements OnInit {
 
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private authService = inject(AuthService);
 
   playerCount = 2;
@@ -165,30 +167,34 @@ export class Players implements OnInit {
 
   }
 
-
-  startGame() {
+startGame() {
 
     const allSelected =
       this.players.every(
-        player =>
-          player.selectedId !== null
+        player => player.selectedId !== null
       );
 
     if (!allSelected) {
       return;
     }
 
-
     const selectedPlayerIds =
       this.players.map(
-        player =>
-          player.selectedId
+        player => player.selectedId
       );
-
 
     console.log(
       'Odabrani igrači:',
       selectedPlayerIds
+    );
+
+    this.router.navigate(
+      ['/game'],
+      {
+        queryParams: {
+          players: selectedPlayerIds.join(',')
+        }
+      }
     );
 
   }
