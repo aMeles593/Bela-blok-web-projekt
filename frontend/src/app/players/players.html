@@ -4,23 +4,81 @@
 
     <h1>Nova igra</h1>
 
-    <p>Unesite imena igrača koji sudjeluju u igri.</p>
+    <p class="subtitle">
+      Odaberite igrače koji sudjeluju u igri.
+    </p>
 
     <div class="player-list">
 
-      @for (player of players; track $index) {
+      @for (player of players; track player.id) {
 
         <div class="player">
 
           <label>
-            Igrač {{ $index + 1 }}
+            Igrač {{ player.id + 1 }}
           </label>
 
-          <input
-            type="text"
-            placeholder="Unesite ime igrača"
-            [(ngModel)]="players[$index]"
-          />
+          @if (player.selectedId === null) {
+
+            <input
+              type="text"
+              placeholder="Pretraži korisničko ime..."
+              [value]="player.search"
+              (input)="onSearchInput(player.id, $event)"
+            />
+
+            @if (player.search.trim()) {
+
+              <div class="suggestions">
+
+                @for (
+                  user of getAvailableUsers(player.id);
+                  track user.id
+                ) {
+
+                  <button
+                    type="button"
+                    class="suggestion"
+                    (click)="selectPlayer(player.id, user)"
+                  >
+                    {{ user.username }}
+                  </button>
+
+                }
+
+                @if (
+                  getAvailableUsers(player.id).length === 0
+                ) {
+
+                  <div class="no-results">
+                    Nema pronađenih korisnika.
+                  </div>
+
+                }
+
+              </div>
+
+            }
+
+          } @else {
+
+            <div class="selected-player">
+
+              <span>
+                {{ player.search }}
+              </span>
+
+              <button
+                type="button"
+                class="remove-player"
+                (click)="removePlayer(player.id)"
+              >
+                ✕
+              </button>
+
+            </div>
+
+          }
 
         </div>
 
@@ -31,7 +89,7 @@
     <button
       class="start-button"
       (click)="startGame()"
-      [disabled]="players.some(player => player.trim() === '')"
+      [disabled]="players.some(player => player.selectedId === null)"
     >
       ZAPOČNI IGRU
     </button>
