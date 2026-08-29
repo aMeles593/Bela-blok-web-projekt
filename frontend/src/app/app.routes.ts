@@ -6,6 +6,7 @@ import { Register } from './register/register';
 import { Login } from './login/login';
 import { authGuard } from './guards/auth-guard';
 import { Game } from './game/game';
+import { GameOptions } from './game-options/game-options';
 
 export const routes: Routes = [
 
@@ -33,6 +34,11 @@ export const routes: Routes = [
     path: 'game',
     component: Game,
     canActivate: [authGuard]
-  }
+  },
+  {
+    path: 'game-options',
+    component: GameOptions
+  },
+
 
 ];

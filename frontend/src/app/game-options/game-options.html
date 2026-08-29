@@ -1,0 +1,46 @@
+
+<div class="options-page">
+
+  <div class="options-container">
+
+    <h1>BELA</h1>
+
+    <p class="subtitle">
+      Igra za {{ playerCount }} igrača
+    </p>
+
+    <h2>
+      Do koliko želite igrati?
+    </h2>
+
+    <p class="description">
+      Odaberite cilj igre.
+    </p>
+
+
+    <div class="score-options">
+
+      @for (score of targetScores; track score) {
+
+        <button
+          class="score-button"
+          (click)="selectTargetScore(score)"
+        >
+
+          <span class="score">
+            {{ score }}
+          </span>
+
+          <span class="score-label">
+            BODOVA
+          </span>
+
+        </button>
+
+      }
+
+    </div>
+
+  </div>
+
+</div>
