@@ -1,20 +1,32 @@
-import { Component, Input } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  ChangeDetectorRef,
+  inject
+} from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
+
 
 interface GamePlayer {
   id: number;
   username: string;
 }
 
+
 interface Team {
   players: GamePlayer[];
   score: number;
 }
 
+
 interface Bid {
   player: string;
   points: number;
 }
+
 
 interface Round {
   number: number;
@@ -35,7 +47,21 @@ interface Round {
   team2Total: number;
 
   failed: boolean;
+
+  /*
+    Štiglja
+  */
+  stiglja: boolean;
+
+  /*
+    Tim koji je imao štiglju.
+    0 = Tim 1
+    1 = Tim 2
+    -1 = nema štiglje
+  */
+  stigljaTeam: number;
 }
+
 
 @Component({
   selector: 'app-four-player',
@@ -44,42 +70,113 @@ interface Round {
   templateUrl: './four-player.html',
   styleUrl: './four-player.scss'
 })
-export class FourPlayer {
+export class FourPlayer implements OnChanges {
 
-  @Input() players: GamePlayer[] = [];
+  private cdr = inject(ChangeDetectorRef);
+
+
+  @Input()
+  players: GamePlayer[] = [];
+
+
+  @Input()
+  targetScore = 701;
+
+
+  /*
+    Ekipe
+  */
 
   teams: Team[] = [];
 
+
+  /*
+    Odigrane runde
+  */
+
   rounds: Round[] = [];
+
+
+  /*
+    Trenutna runda
+  */
 
   currentRound: Round | null = null;
 
+
   /*
-    Tim koji je zadnji ručno unosio bodove.
+    Koji tim trenutno ručno
+    unosi bodove?
 
     0 = Tim 1
     1 = Tim 2
-    null = ništa još nije uneseno
+    -1 = još nije odabran
   */
-  manualTeam: 0 | 1 | null = null;
+
+  manualTeam = -1;
 
 
-  ngOnInit() {
+  /*
+    Je li igra završila?
+  */
 
-    this.createTeams();
+  gameFinished = false;
+
+
+  /*
+    Pobjednička ekipa
+  */
+
+  winnerTeam = -1;
+
+
+  /*
+    Bodovi iz jedne normalne runde
+  */
+
+  readonly GAME_POINTS = 162;
+
+
+  /*
+    Bonus za štiglju
+  */
+
+  readonly STIGLJA_POINTS = 90;
+
+
+  /*
+    Kada se učitaju igrači,
+    napravimo dvije ekipe.
+  */
+
+  ngOnChanges(changes: SimpleChanges) {
+
+    if (
+      changes['players'] &&
+      this.players.length === 4
+    ) {
+
+      this.createTeams();
+
+    }
 
   }
 
 
-  // ==========================================
-  // TIMOVI
-  // ==========================================
+  /*
+    TIM 1:
+    Igrač 1 + Igrač 2
+
+    TIM 2:
+    Igrač 3 + Igrač 4
+  */
 
   createTeams() {
 
     if (this.players.length !== 4) {
       return;
     }
+
 
     this.teams = [
 
@@ -101,18 +198,51 @@ export class FourPlayer {
 
     ];
 
+
+    this.cdr.detectChanges();
+
   }
 
 
-  // ==========================================
-  // NOVA RUNDA
-  // ==========================================
+  /*
+    Vraća imena igrača ekipe.
+  */
+
+  getTeamPlayerNames(
+    teamIndex: number
+  ): string {
+
+    if (!this.teams[teamIndex]) {
+      return '';
+    }
+
+
+    return this.teams[teamIndex]
+      .players
+      .map(player => player.username)
+      .join(' + ');
+
+  }
+
+
+  /*
+    Otvaranje nove runde.
+  */
 
   openNewRound() {
+
+    if (this.gameFinished) {
+      return;
+    }
+
 
     if (this.currentRound !== null) {
       return;
     }
+
+
+    this.manualTeam = -1;
+
 
     this.currentRound = {
 
@@ -137,90 +267,30 @@ export class FourPlayer {
 
       team2Total: 0,
 
-      failed: false
+      failed: false,
+
+      stiglja: false,
+
+      stigljaTeam: -1
 
     };
 
-    this.manualTeam = null;
+
+    this.cdr.detectChanges();
 
   }
 
 
-  // ==========================================
-  // BODOVI
-  // ==========================================
-
-  updateTeam1Points() {
-
-    if (!this.currentRound) {
-      return;
-    }
-
-    this.manualTeam = 0;
-
-    let points =
-      Number(this.currentRound.team1Points);
-
-    if (isNaN(points)) {
-      points = 0;
-    }
-
-    if (points < 0) {
-      points = 0;
-    }
-
-    if (points > 162) {
-      points = 162;
-    }
-
-    this.currentRound.team1Points = points;
-
-    this.currentRound.team2Points =
-      162 - points;
-
-  }
-
-
-  updateTeam2Points() {
-
-    if (!this.currentRound) {
-      return;
-    }
-
-    this.manualTeam = 1;
-
-    let points =
-      Number(this.currentRound.team2Points);
-
-    if (isNaN(points)) {
-      points = 0;
-    }
-
-    if (points < 0) {
-      points = 0;
-    }
-
-    if (points > 162) {
-      points = 162;
-    }
-
-    this.currentRound.team2Points = points;
-
-    this.currentRound.team1Points =
-      162 - points;
-
-  }
-
-
-  // ==========================================
-  // ZVANJA
-  // ==========================================
+  /*
+    Dodavanje zvanja.
+  */
 
   addBid() {
 
     if (!this.currentRound) {
       return;
     }
+
 
     this.currentRound.bids.push({
 
@@ -230,8 +300,15 @@ export class FourPlayer {
 
     });
 
+
+    this.calculateBids();
+
   }
 
+
+  /*
+    Brisanje zvanja.
+  */
 
   removeBid(index: number) {
 
@@ -239,21 +316,28 @@ export class FourPlayer {
       return;
     }
 
+
     this.currentRound.bids.splice(
       index,
       1
     );
+
 
     this.calculateBids();
 
   }
 
 
+  /*
+    Računanje zvanja po ekipama.
+  */
+
   calculateBids() {
 
     if (!this.currentRound) {
       return;
     }
+
 
     let team1Bids = 0;
 
@@ -268,6 +352,7 @@ export class FourPlayer {
         this.getTeamIndexByPlayer(
           bid.player
         );
+
 
       const points =
         Number(bid.points) || 0;
@@ -291,177 +376,691 @@ export class FourPlayer {
     this.currentRound.team1Bids =
       team1Bids;
 
+
     this.currentRound.team2Bids =
       team2Bids;
 
+
+    this.calculateCurrentRound();
+
   }
 
 
-  // ==========================================
-  // PREGLED BODOVA
-  // ==========================================
+  /*
+    KORISNIK UNOSI BODOVE ZA TIM 1.
+    
+    Tim 2 se automatski računa:
+    
+    162 - Tim 1
+  */
 
-  getTeam1Preview() {
+  updateTeam1Points() {
 
     if (!this.currentRound) {
-      return 0;
+      return;
     }
 
-    return (
-      Number(
-        this.currentRound.team1Points
-      ) || 0
+    this.manualTeam = 0;
+
+    const value = this.currentRound.team1Points as any;
+
+    // Ako je input trenutno prazan,
+    // ne računamo ništa.
+    if (
+      value === '' ||
+      value === null ||
+      value === undefined
+    ) {
+      this.currentRound.team2Points = 0;
+      this.currentRound.team1Total = 0;
+      this.currentRound.team2Total = 0;
+      return;
+    }
+
+    let points = Number(value);
+
+    if (isNaN(points)) {
+      return;
+    }
+
+    // Ograničenje 0 - 162
+    points = Math.max(
+      0,
+      Math.min(
+        this.GAME_POINTS,
+        points
+      )
     );
 
+    this.currentRound.team1Points = points;
+
+    // Ako nije štiglja,
+    // Tim 2 automatski dobiva ostatak.
+    if (!this.currentRound.stiglja) {
+
+      this.currentRound.team2Points =
+        this.GAME_POINTS - points;
+
+    }
+
+    this.calculateCurrentRound();
+
+    this.cdr.detectChanges();
   }
 
 
-  getTeam2Preview() {
+    /*
+      KORISNIK UNOSI BODOVE ZA TIM 2.
+      
+      Tim 1 se automatski računa:
+      
+      162 - Tim 2
+    */
+
+  updateTeam2Points() {
 
     if (!this.currentRound) {
-      return 0;
+      return;
     }
 
-    return (
-      Number(
-        this.currentRound.team2Points
-      ) || 0
+    this.manualTeam = 1;
+
+    const value = this.currentRound.team2Points as any;
+
+    // Ako je input trenutno prazan,
+    // ne računamo ništa.
+    if (
+      value === '' ||
+      value === null ||
+      value === undefined
+    ) {
+      this.currentRound.team1Points = 0;
+      this.currentRound.team1Total = 0;
+      this.currentRound.team2Total = 0;
+      return;
+    }
+
+    let points = Number(value);
+
+    if (isNaN(points)) {
+      return;
+    }
+
+    // Ograničenje 0 - 162
+    points = Math.max(
+      0,
+      Math.min(
+        this.GAME_POINTS,
+        points
+      )
     );
 
+    this.currentRound.team2Points = points;
+
+    // Ako nije štiglja,
+    // Tim 1 automatski dobiva ostatak.
+    if (!this.currentRound.stiglja) {
+
+      this.currentRound.team1Points =
+        this.GAME_POINTS - points;
+
+    }
+
+    this.calculateCurrentRound();
+
+    this.cdr.detectChanges();
   }
 
 
-  getTeam1TotalPreview() {
+  /*
+    Promjena štiglje.
+  */
+
+  updateStiglja() {
 
     if (!this.currentRound) {
-      return 0;
-    }
-
-    return (
-      this.getTeam1Preview() +
-      this.currentRound.team1Bids
-    );
-
-  }
-
-
-  getTeam2TotalPreview() {
-
-    if (!this.currentRound) {
-      return 0;
-    }
-
-    return (
-      this.getTeam2Preview() +
-      this.currentRound.team2Bids
-    );
-
-  }
-
-
-  getTotalRoundPoints() {
-
-    if (!this.currentRound) {
-      return 162;
-    }
-
-    return (
-      162 +
-      this.currentRound.team1Bids +
-      this.currentRound.team2Bids
-    );
-
-  }
-
-
-  getCallerTeam(): number {
-
-    if (!this.currentRound) {
-      return -1;
-    }
-
-    return this.getTeamIndexByPlayer(
-      this.currentRound.caller
-    );
-
-  }
-
-
-  // ==========================================
-  // PROLAZ / PAD
-  // ==========================================
-
-  getRoundStatus(): string {
-
-    if (!this.currentRound) {
-      return '';
-    }
-
-    const callerTeam =
-      this.getCallerTeam();
-
-
-    if (callerTeam === -1) {
-      return '';
+      return;
     }
 
 
-    const totalPoints =
-      this.getTotalRoundPoints();
+    /*
+      Ako je štiglja uključena,
+      korisnik mora odabrati
+      koja je ekipa imala 0.
+    */
 
+    if (this.currentRound.stiglja) {
 
-    let callerTotal = 0;
+      /*
+        Ako još nije odabran tim,
+        ne mijenjamo bodove.
+      */
 
+      if (
+        this.currentRound.stigljaTeam === -1
+      ) {
 
-    if (callerTeam === 0) {
+        this.currentRound.team1Points = 0;
 
-      callerTotal =
-        this.getTeam1TotalPreview();
+        this.currentRound.team2Points =
+          this.GAME_POINTS;
+
+      }
+
+      else if (
+        this.currentRound.stigljaTeam === 0
+      ) {
+
+        /*
+          Tim 1 ima 0.
+        */
+
+        this.currentRound.team1Points = 0;
+
+        this.currentRound.team2Points =
+          this.GAME_POINTS;
+
+        this.manualTeam = 1;
+
+      }
+
+      else if (
+        this.currentRound.stigljaTeam === 1
+      ) {
+
+        /*
+          Tim 2 ima 0.
+        */
+
+        this.currentRound.team2Points = 0;
+
+        this.currentRound.team1Points =
+          this.GAME_POINTS;
+
+        this.manualTeam = 0;
+
+      }
 
     }
 
     else {
 
-      callerTotal =
-        this.getTeam2TotalPreview();
+      /*
+        Ako se štiglja isključi,
+        vraćamo normalno računanje
+        prema ručno odabranom timu.
+      */
+
+      this.currentRound.stigljaTeam = -1;
+
+
+      if (this.manualTeam === 0) {
+
+        this.currentRound.team2Points =
+          this.GAME_POINTS -
+          Number(
+            this.currentRound.team1Points
+          );
+
+      }
+
+      else if (this.manualTeam === 1) {
+
+        this.currentRound.team1Points =
+          this.GAME_POINTS -
+          Number(
+            this.currentRound.team2Points
+          );
+
+      }
+
+    }
+
+
+    this.calculateCurrentRound();
+
+    this.cdr.detectChanges();
+
+  }
+
+
+  /*
+    Odabir ekipe koja ima štiglju.
+  */
+
+  setStigljaTeam(
+    teamIndex: number
+  ) {
+
+    if (!this.currentRound) {
+      return;
+    }
+
+
+    this.currentRound.stiglja =
+      true;
+
+
+    this.currentRound.stigljaTeam =
+      teamIndex;
+
+
+    /*
+      Ako Tim 1 ima štiglju:
+      Tim 1 = 0
+      Tim 2 = 162
+    */
+
+    if (teamIndex === 0) {
+
+      this.currentRound.team1Points = 0;
+
+      this.currentRound.team2Points =
+        this.GAME_POINTS;
+
+      this.manualTeam = 1;
 
     }
 
 
     /*
-      Ekipa koja je zvala mora
-      imati VIŠE od polovice ukupnih
-      bodova u igri.
+      Ako Tim 2 ima štiglju:
+      Tim 2 = 0
+      Tim 1 = 162
+    */
+
+    else if (teamIndex === 1) {
+
+      this.currentRound.team2Points = 0;
+
+      this.currentRound.team1Points =
+        this.GAME_POINTS;
+
+      this.manualTeam = 0;
+
+    }
+
+
+    this.calculateCurrentRound();
+
+    this.cdr.detectChanges();
+
+  }
+
+
+  /*
+    Isključivanje štiglje.
+  */
+
+  removeStiglja() {
+
+    if (!this.currentRound) {
+      return;
+    }
+
+
+    this.currentRound.stiglja =
+      false;
+
+
+    this.currentRound.stigljaTeam =
+      -1;
+
+
+    /*
+      Ponovno računamo bodove
+      prema ekipi koju je korisnik
+      zadnju ručno unosio.
+    */
+
+    if (this.manualTeam === 0) {
+
+      this.currentRound.team2Points =
+        this.GAME_POINTS -
+        Number(
+          this.currentRound.team1Points
+        );
+
+    }
+
+    else if (this.manualTeam === 1) {
+
+      this.currentRound.team1Points =
+        this.GAME_POINTS -
+        Number(
+          this.currentRound.team2Points
+        );
+
+    }
+
+
+    this.calculateCurrentRound();
+
+    this.cdr.detectChanges();
+
+  }
+
+
+  /*
+    Glavni izračun trenutne runde.
+  */
+
+  calculateCurrentRound() {
+
+    if (!this.currentRound) {
+      return;
+    }
+
+
+    const team1Points =
+      Number(
+        this.currentRound.team1Points
+      ) || 0;
+
+
+    const team2Points =
+      Number(
+        this.currentRound.team2Points
+      ) || 0;
+
+
+    const team1Bids =
+      Number(
+        this.currentRound.team1Bids
+      ) || 0;
+
+
+    const team2Bids =
+      Number(
+        this.currentRound.team2Bids
+      ) || 0;
+
+
+    /*
+      Ako nema bodova,
+      nema rezultata.
+    */
+
+    if (
+      team1Points === 0 &&
+      team2Points === 0
+    ) {
+
+      this.currentRound.team1Total = 0;
+
+      this.currentRound.team2Total = 0;
+
+      this.currentRound.failed = false;
+
+      return;
+
+    }
+
+
+    /*
+      Vrijednost cijele runde:
+
+      162 + sva zvanja
+    */
+
+    const totalRoundValue =
+      this.GAME_POINTS +
+      team1Bids +
+      team2Bids;
+
+
+    /*
+      ŠTIGLJA
+    */
+
+    if (
+      this.currentRound.stiglja &&
+      this.currentRound.stigljaTeam !== -1
+    ) {
+
+      /*
+        Tim 1 ima štiglju.
+      */
+
+      if (
+        this.currentRound.stigljaTeam === 0
+      ) {
+
+        this.currentRound.team1Total = 0;
+
+
+        this.currentRound.team2Total =
+          totalRoundValue +
+          this.STIGLJA_POINTS;
+
+      }
+
+
+      /*
+        Tim 2 ima štiglju.
+      */
+
+      else if (
+        this.currentRound.stigljaTeam === 1
+      ) {
+
+        this.currentRound.team2Total = 0;
+
+
+        this.currentRound.team1Total =
+          totalRoundValue +
+          this.STIGLJA_POINTS;
+
+      }
+
+
+      this.currentRound.failed = false;
+
+      return;
+
+    }
+
+
+    /*
+      Ako nema štiglje,
+      osiguravamo da je zbroj 162.
+    */
+
+    if (this.manualTeam === 0) {
+
+      this.currentRound.team2Points =
+        Math.max(
+          0,
+          this.GAME_POINTS -
+          team1Points
+        );
+
+    }
+
+    else if (this.manualTeam === 1) {
+
+      this.currentRound.team1Points =
+        Math.max(
+          0,
+          this.GAME_POINTS -
+          team2Points
+        );
+
+    }
+
+
+    /*
+      Ponovno dohvaćamo vrijednosti
+      nakon automatskog izračuna.
+    */
+
+    const finalTeam1Points =
+      Number(
+        this.currentRound.team1Points
+      ) || 0;
+
+
+    const finalTeam2Points =
+      Number(
+        this.currentRound.team2Points
+      ) || 0;
+
+
+    /*
+      Ako još nije odabran
+      igrač koji je zvao,
+      samo prikažemo normalan
+      zbroj.
+    */
+
+    const callerTeam =
+      this.getTeamIndexByPlayer(
+        this.currentRound.caller
+      );
+
+
+    if (callerTeam === -1) {
+
+      this.currentRound.team1Total =
+        finalTeam1Points +
+        team1Bids;
+
+
+      this.currentRound.team2Total =
+        finalTeam2Points +
+        team2Bids;
+
+
+      this.currentRound.failed = false;
+
+      return;
+
+    }
+
+
+    /*
+      Koliko treba za prolaz?
+
+      Mora biti VIŠE od polovice
+      ukupne vrijednosti runde.
 
       Primjer:
 
       162 + 20 zvanja = 182
 
-      polovica = 91
+      182 / 2 = 91
 
-      91 ili manje = PAD
-      92 ili više = PROŠAO
+      Potrebno = 92
     */
 
-    const half =
-      totalPoints / 2;
+    const requiredPoints =
+      Math.floor(
+        totalRoundValue / 2
+      ) + 1;
 
 
-    if (callerTotal <= half) {
+    /*
+      TIM 1 JE ZVAO
+    */
 
-      return 'PAD';
+    if (callerTeam === 0) {
+
+      if (
+        finalTeam1Points <
+        requiredPoints
+      ) {
+
+        /*
+          Tim 1 je pao.
+
+          Sve ide Timu 2.
+        */
+
+        this.currentRound.failed = true;
+
+        this.currentRound.team1Total = 0;
+
+        this.currentRound.team2Total =
+          totalRoundValue;
+
+      }
+
+      else {
+
+        /*
+          Tim 1 je prošao.
+        */
+
+        this.currentRound.failed = false;
+
+        this.currentRound.team1Total =
+          finalTeam1Points +
+          team1Bids;
+
+        this.currentRound.team2Total =
+          finalTeam2Points +
+          team2Bids;
+
+      }
 
     }
 
 
-    return 'PROŠAO';
+    /*
+      TIM 2 JE ZVAO
+    */
+
+    else if (callerTeam === 1) {
+
+      if (
+        finalTeam2Points <
+        requiredPoints
+      ) {
+
+        /*
+          Tim 2 je pao.
+
+          Sve ide Timu 1.
+        */
+
+        this.currentRound.failed = true;
+
+        this.currentRound.team2Total = 0;
+
+        this.currentRound.team1Total =
+          totalRoundValue;
+
+      }
+
+      else {
+
+        /*
+          Tim 2 je prošao.
+        */
+
+        this.currentRound.failed = false;
+
+        this.currentRound.team1Total =
+          finalTeam1Points +
+          team1Bids;
+
+        this.currentRound.team2Total =
+          finalTeam2Points +
+          team2Bids;
+
+      }
+
+    }
+
+
+    this.cdr.detectChanges();
 
   }
 
 
-  // ==========================================
-  // SPREMANJE RUNDE
-  // ==========================================
+  /*
+    Spremanje runde.
+  */
 
   saveRound() {
 
@@ -471,7 +1070,8 @@ export class FourPlayer {
 
 
     /*
-      Tko je zvao mora biti odabran.
+      Mora biti odabrano
+      tko je zvao.
     */
 
     if (
@@ -479,7 +1079,7 @@ export class FourPlayer {
     ) {
 
       alert(
-        'Odaberite igrača koji je zvao.'
+        'Odaberite tko je zvao.'
       );
 
       return;
@@ -488,7 +1088,7 @@ export class FourPlayer {
 
 
     /*
-      Adut mora biti odabran.
+      Mora biti odabran adut.
     */
 
     if (
@@ -505,29 +1105,17 @@ export class FourPlayer {
 
 
     /*
-      Bodovi moraju biti između 0 i 162.
+      Ako je štiglja uključena,
+      mora biti odabran tim.
     */
 
-    const team1Points =
-      Number(
-        this.currentRound.team1Points
-      ) || 0;
-
-    const team2Points =
-      Number(
-        this.currentRound.team2Points
-      ) || 0;
-
-
     if (
-      team1Points < 0 ||
-      team1Points > 162 ||
-      team2Points < 0 ||
-      team2Points > 162
+      this.currentRound.stiglja &&
+      this.currentRound.stigljaTeam === -1
     ) {
 
       alert(
-        'Bodovi moraju biti između 0 i 162.'
+        'Odaberite koja je ekipa imala štiglju.'
       );
 
       return;
@@ -536,13 +1124,26 @@ export class FourPlayer {
 
 
     /*
-      Mora biti točno 162 bodova
-      iz same igre.
+      Ako nije štiglja,
+      bodovi moraju ukupno biti 162.
     */
 
+    const team1Points =
+      Number(
+        this.currentRound.team1Points
+      ) || 0;
+
+
+    const team2Points =
+      Number(
+        this.currentRound.team2Points
+      ) || 0;
+
+
     if (
-      team1Points +
-      team2Points !== 162
+      !this.currentRound.stiglja &&
+      team1Points + team2Points !==
+      this.GAME_POINTS
     ) {
 
       alert(
@@ -555,177 +1156,26 @@ export class FourPlayer {
 
 
     /*
-      Izračun zvanja.
+      Ponovno računamo zvanja
+      i rezultat.
     */
 
     this.calculateBids();
 
-
-    const team1Bids =
-      this.currentRound.team1Bids;
-
-    const team2Bids =
-      this.currentRound.team2Bids;
+    this.calculateCurrentRound();
 
 
     /*
-      Ukupno bodova u ovoj rundi
-      uključujući zvanja.
+      Spremamo kopiju runde.
     */
 
-    const totalRoundPoints =
-      162 +
-      team1Bids +
-      team2Bids;
+    const savedRound: Round = {
 
+      ...this.currentRound,
 
-    /*
-      Ekipa koja je zvala.
-    */
-
-    const callerTeam =
-      this.getTeamIndexByPlayer(
-        this.currentRound.caller
-      );
-
-
-    if (
-      callerTeam !== 0 &&
-      callerTeam !== 1
-    ) {
-
-      return;
-
-    }
-
-
-    /*
-      Bodovi ekipe koja je zvala
-      uključujući njezina zvanja.
-    */
-
-    const callerPoints =
-      callerTeam === 0
-        ? team1Points + team1Bids
-        : team2Points + team2Bids;
-
-
-    /*
-      Mora imati VIŠE od polovice.
-
-      Npr.:
-      162 + 20 = 182
-
-      polovica = 91
-
-      91 = PAD
-      92 = PROŠAO
-    */
-
-    const half =
-      totalRoundPoints / 2;
-
-
-    const failed =
-      callerPoints <= half;
-
-
-    let team1Total = 0;
-
-    let team2Total = 0;
-
-
-    /*
-      AKO JE EKIPA KOJA JE ZVALA PALA
-    */
-
-    if (failed) {
-
-      /*
-        Ekipa koja je zvala dobiva 0.
-
-        Protivnička ekipa dobiva
-        SVE BODOVE IZ RUNDE:
-
-        162 + sva zvanja
-      */
-
-      if (callerTeam === 0) {
-
-        team1Total = 0;
-
-        team2Total =
-          totalRoundPoints;
-
-      }
-
-      else {
-
-        team2Total = 0;
-
-        team1Total =
-          totalRoundPoints;
-
-      }
-
-    }
-
-
-    /*
-      AKO JE EKIPA PROŠLA
-    */
-
-    else {
-
-      team1Total =
-        team1Points +
-        team1Bids;
-
-      team2Total =
-        team2Points +
-        team2Bids;
-
-    }
-
-
-    /*
-      Kreiramo završenu rundu.
-    */
-
-    const round: Round = {
-
-      number:
-        this.currentRound.number,
-
-      caller:
-        this.currentRound.caller,
-
-      trump:
-        this.currentRound.trump,
-
-      bids:
-        [...this.currentRound.bids],
-
-      team1Points:
-        team1Points,
-
-      team2Points:
-        team2Points,
-
-      team1Bids:
-        team1Bids,
-
-      team2Bids:
-        team2Bids,
-
-      team1Total:
-        team1Total,
-
-      team2Total:
-        team2Total,
-
-      failed:
-        failed
+      bids: [
+        ...this.currentRound.bids
+      ]
 
     };
 
@@ -734,38 +1184,86 @@ export class FourPlayer {
       Dodajemo rundu.
     */
 
-    this.rounds.push(round);
+    this.rounds.push(
+      savedRound
+    );
 
 
     /*
-      Dodajemo bodove ukupnom rezultatu.
+      Dodajemo rezultat ekipama.
     */
 
     this.teams[0].score +=
-      team1Total;
+      savedRound.team1Total;
+
 
     this.teams[1].score +=
-      team2Total;
+      savedRound.team2Total;
 
 
     /*
-      Zatvaramo trenutnu rundu.
+      Provjeravamo pobjednika.
+    */
+
+    this.checkWinner();
+
+
+    /*
+      Zatvaramo rundu.
     */
 
     this.currentRound = null;
 
-    this.manualTeam = null;
+    this.manualTeam = -1;
+
+
+    this.cdr.detectChanges();
 
   }
 
 
-  // ==========================================
-  // POMOĆNE FUNKCIJE
-  // ==========================================
+  /*
+    Provjera pobjednika.
+  */
+
+  checkWinner() {
+
+    for (
+      let i = 0;
+      i < this.teams.length;
+      i++
+    ) {
+
+      if (
+        this.teams[i].score >=
+        this.targetScore
+      ) {
+
+        this.gameFinished = true;
+
+        this.winnerTeam = i;
+
+        return;
+
+      }
+
+    }
+
+  }
+
+
+  /*
+    Dohvaća ekipu kojoj igrač pripada.
+  */
 
   getTeamIndexByPlayer(
     username: string
   ): number {
+
+    if (!username) {
+      return -1;
+    }
+
 
     for (
       let i = 0;
@@ -774,10 +1272,12 @@ export class FourPlayer {
     ) {
 
       const found =
-        this.teams[i].players.some(
-          player =>
-            player.username === username
-        );
+        this.teams[i]
+          .players
+          .some(
+            player =>
+              player.username === username
+          );
 
 
       if (found) {
@@ -792,12 +1292,164 @@ export class FourPlayer {
   }
 
 
-  getTeamPlayerNames(
-    teamIndex: number
+  /*
+    Rezultat runde.
+  */
+
+  getRoundResult(
+    round: Round
   ): string {
 
+    return `${round.team1Total} : ${round.team2Total}`;
+
+  }
+
+
+  /*
+    Ukupna zvanja trenutne runde.
+  */
+
+  getTotalBids(): number {
+
+    if (!this.currentRound) {
+      return 0;
+    }
+
+
+    return (
+      this.currentRound.team1Bids +
+      this.currentRound.team2Bids
+    );
+
+  }
+
+
+  /*
+    Ukupna vrijednost runde.
+  */
+
+  getCurrentRoundValue(): number {
+
+    return (
+      this.GAME_POINTS +
+      this.getTotalBids()
+    );
+
+  }
+
+
+  /*
+    Potrebno za prolaz.
+  */
+
+  getRequiredPoints(): number {
+
+    return (
+      Math.floor(
+        this.getCurrentRoundValue() / 2
+      ) + 1
+    );
+
+  }
+
+
+  /*
+    Trenutni rezultat Tim 1.
+  */
+
+  getTeam1Preview(): number {
+
+    if (!this.currentRound) {
+      return 0;
+    }
+
+
+    return this.currentRound.team1Total;
+
+  }
+
+
+  /*
+    Trenutni rezultat Tim 2.
+  */
+
+  getTeam2Preview(): number {
+
+    if (!this.currentRound) {
+      return 0;
+    }
+
+
+    return this.currentRound.team2Total;
+
+  }
+
+
+  /*
+    Koliko bodova štiglje
+    ide pojedinom timu.
+  */
+
+  getStigljaPoints(
+    teamIndex: number
+  ): number {
+
+    if (!this.currentRound) {
+      return 0;
+    }
+
+
     if (
-      !this.teams[teamIndex]
+      !this.currentRound.stiglja
+    ) {
+
+      return 0;
+
+    }
+
+
+    if (
+      this.currentRound.stigljaTeam ===
+      teamIndex
+    ) {
+
+      return this.STIGLJA_POINTS;
+
+    }
+
+
+    return 0;
+
+  }
+
+
+  /*
+    Tekst PROŠAO / PAD.
+  */
+
+  getRoundStatus(): string {
+
+    if (!this.currentRound) {
+      return '';
+    }
+
+
+    if (
+      this.currentRound.failed
+    ) {
+
+      return 'PAD';
+
+    }
+
+
+    /*
+      Ako još nema pozivatelja,
+      nema statusa.
+    */
+
+    if (
+      this.currentRound.caller === ''
     ) {
 
       return '';
@@ -805,13 +1457,43 @@ export class FourPlayer {
     }
 
 
-    return this.teams[teamIndex]
-      .players
-      .map(
-        player =>
-          player.username
-      )
-      .join(' + ');
+    return 'PROŠAO';
+
+  }
+
+
+  /*
+    Tekst za štiglju.
+  */
+
+  getStigljaText(
+    round: Round
+  ): string {
+
+    if (!round.stiglja) {
+      return '';
+    }
+
+
+    if (
+      round.stigljaTeam === 0
+    ) {
+
+      return 'Štiglja – Tim 1';
+
+    }
+
+
+    if (
+      round.stigljaTeam === 1
+    ) {
+
+      return 'Štiglja – Tim 2';
+
+    }
+
+
+    return '';
 
   }
 
