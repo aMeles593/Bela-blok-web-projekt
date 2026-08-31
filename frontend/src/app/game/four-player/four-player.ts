@@ -960,11 +960,11 @@ export class FourPlayer implements OnChanges {
 
       Potrebno = 92
     */
-
+    /* 
+      KOLIKO TREBA ZA PROLAZ
+    */
     const requiredPoints =
-      Math.floor(
-        totalRoundValue / 2
-      ) + 1;
+      Math.floor(totalRoundValue / 2) + 1;
 
 
     /*
@@ -972,33 +972,46 @@ export class FourPlayer implements OnChanges {
     */
     if (callerTeam === 0) {
 
-      const callerTotal =
-        finalTeam1Points + team1Bids;
+      /*
+        Tim 1 mora imati više od polovice
+        ukupne vrijednosti runde.
+      */
+      if (finalTeam1Points < requiredPoints) {
 
-      if (
-        callerTotal <
-        requiredPoints
-      ) {
+        /*
+          TIM 1 JE PAO.
 
+          Tim 1 dobiva 0 bodova.
+
+          Tim 2 dobiva CIJELU vrijednost
+          runde uključujući sva zvanja.
+        */
         this.currentRound.failed = true;
 
-        this.currentRound.team1Total =
-          finalTeam1Points + team1Bids;
+        this.currentRound.team1Total = 0;
 
         this.currentRound.team2Total =
-          finalTeam2Points + team2Bids;
+          totalRoundValue;
 
       }
 
       else {
 
+        /*
+          TIM 1 JE PROŠAO.
+
+          Svaka ekipa dobiva svoje
+          bodove iz igre + svoja zvanja.
+        */
         this.currentRound.failed = false;
 
         this.currentRound.team1Total =
-          finalTeam1Points + team1Bids;
+          finalTeam1Points +
+          team1Bids;
 
         this.currentRound.team2Total =
-          finalTeam2Points + team2Bids;
+          finalTeam2Points +
+          team2Bids;
 
       }
 
@@ -1008,36 +1021,48 @@ export class FourPlayer implements OnChanges {
     /*
       TIM 2 JE ZVAO
     */
-
     else if (callerTeam === 1) {
 
-      const callerTotal =
-        finalTeam2Points + team2Bids;
+      /*
+        Tim 2 mora imati više od polovice
+        ukupne vrijednosti runde.
+      */
+      if (finalTeam2Points < requiredPoints) {
 
-      if (
-        callerTotal <
-        requiredPoints
-      ) {
+        /*
+          TIM 2 JE PAO.
 
+          Tim 2 dobiva 0.
+
+          Tim 1 dobiva CIJELU vrijednost
+          runde uključujući sva zvanja.
+        */
         this.currentRound.failed = true;
 
-        this.currentRound.team2Total =
-          finalTeam2Points + team2Bids;
+        this.currentRound.team2Total = 0;
 
         this.currentRound.team1Total =
-          finalTeam1Points + team1Bids;
+          totalRoundValue;
 
       }
 
       else {
 
+        /*
+          TIM 2 JE PROŠAO.
+
+          Svaka ekipa dobiva svoje
+          bodove iz igre + svoja zvanja.
+        */
         this.currentRound.failed = false;
 
         this.currentRound.team1Total =
-          finalTeam1Points + team1Bids;
+          finalTeam1Points +
+          team1Bids;
 
         this.currentRound.team2Total =
-          finalTeam2Points + team2Bids;
+          finalTeam2Points +
+          team2Bids;
 
       }
 
