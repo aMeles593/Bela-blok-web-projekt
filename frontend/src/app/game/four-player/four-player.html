@@ -1,25 +1,50 @@
 <div class="four-player-game">
 
   <!-- ==========================================
-       REZULTAT
+      INFORMACIJE O PARTIJI
+  =========================================== -->
+
+  <section class="game-info">
+
+    <div class="game-target">
+
+      <span>
+        Igra se do
+      </span>
+
+      <strong>
+        {{ targetScore }}
+      </strong>
+
+      <span>
+        bodova
+      </span>
+
+    </div>
+
+  </section>
+    
+  <!-- ==========================================
+      REZULTAT TRENUTNE PARTIJE
   =========================================== -->
 
   <section class="scoreboard">
 
-    <h2>Rezultat</h2>
-
-    <div class="target-score">
-      Cilj:
-      <strong>{{ targetScore }}</strong>
-    </div>
+    <h2>Trenutna partija</h2>
 
     <div class="scoreboard-teams">
 
-      @for (team of teams; track $index) {
+      @for (
+        team of teams;
+        track $index
+      ) {
 
         <div
           class="scoreboard-team"
-          [class.winner]="winnerTeam === $index"
+          [class.winner]="
+            gameFinished &&
+            winnerTeam === $index
+          "
         >
 
           <span class="scoreboard-team-name">
@@ -33,6 +58,48 @@
         </div>
 
       }
+
+    </div>
+
+  </section>
+
+  <!-- ==========================================
+      OMJER PARTIJA
+  =========================================== -->
+
+  <section class="games-score">
+
+    <h3>Partije</h3>
+
+    <div class="games-score-value">
+
+      <div class="games-team">
+
+        <span>
+          {{ getTeamPlayerNames(0) }}
+        </span>
+
+        <strong>
+          {{ gamesWon[0] }}
+        </strong>
+
+      </div>
+
+      <div class="games-separator">
+        :
+      </div>
+
+      <div class="games-team">
+
+        <strong>
+          {{ gamesWon[1] }}
+        </strong>
+
+        <span>
+          {{ getTeamPlayerNames(1) }}
+        </span>
+
+      </div>
 
     </div>
 
@@ -63,6 +130,70 @@
       </p>
 
     </div>
+
+  }
+
+  <!-- ==========================================
+      KRAJ PARTIJE
+  =========================================== -->
+
+  @if (gameFinished) {
+
+    <section class="game-finished">
+
+      <div class="game-finished-content">
+
+        <h2>
+          Partija završena!
+        </h2>
+
+        <p class="winner-text">
+
+          Pobjednik:
+
+          <strong>
+            {{ getTeamPlayerNames(winnerTeam) }}
+          </strong>
+
+        </p>
+
+        <div class="final-score">
+
+          <span>
+            {{ teams[0].score }}
+          </span>
+
+          <strong>
+            :
+          </strong>
+
+          <span>
+            {{ teams[1].score }}
+          </span>
+
+        </div>
+
+        <p class="games-result">
+
+          Omjer partija:
+
+          <strong>
+            {{ gamesWon[0] }} : {{ gamesWon[1] }}
+          </strong>
+
+        </p>
+
+        <button
+          type="button"
+          class="new-game-button"
+          (click)="startNewGame()"
+        >
+          NOVA PARTIJA
+        </button>
+
+      </div>
+
+    </section>
 
   }
 
@@ -108,6 +239,7 @@
         <button
           class="new-round-button"
           (click)="openNewRound()"
+          [disabled]="gameFinished"
         >
           ZAPOČNI PRVU RUNDU
         </button>
@@ -437,24 +569,17 @@
 
           <!-- ZBROJ -->
 
-          <div class="points-total">
+         <div class="points-total">
+          <span>Bodovi iz igre:</span>
 
-            <span>
-              Bodovi iz igre:
-            </span>
-
-            <strong>
-
-              {{
-                currentRound.team1Points +
-                currentRound.team2Points
-              }}
-
-              / 162
-
-            </strong>
-
-          </div>
+          <strong>
+            {{
+              (currentRound.team1Points || 0) +
+              (currentRound.team2Points || 0)
+            }}
+            / 162
+          </strong>
+        </div>
 
         </div>
 

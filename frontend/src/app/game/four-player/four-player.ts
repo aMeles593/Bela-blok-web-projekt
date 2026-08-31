@@ -129,6 +129,14 @@ export class FourPlayer implements OnChanges {
 
   winnerTeam = -1;
 
+    /*
+    Broj osvojenih partija.
+
+    0 = Tim 1
+    1 = Tim 2
+  */
+  gamesWon: number[] = [0, 0];
+
 
   /*
     Bodovi iz jedne normalne runde
@@ -962,44 +970,35 @@ export class FourPlayer implements OnChanges {
     /*
       TIM 1 JE ZVAO
     */
-
     if (callerTeam === 0) {
 
+      const callerTotal =
+        finalTeam1Points + team1Bids;
+
       if (
-        finalTeam1Points <
+        callerTotal <
         requiredPoints
       ) {
 
-        /*
-          Tim 1 je pao.
-
-          Sve ide Timu 2.
-        */
-
         this.currentRound.failed = true;
 
-        this.currentRound.team1Total = 0;
+        this.currentRound.team1Total =
+          finalTeam1Points + team1Bids;
 
         this.currentRound.team2Total =
-          totalRoundValue;
+          finalTeam2Points + team2Bids;
 
       }
 
       else {
 
-        /*
-          Tim 1 je prošao.
-        */
-
         this.currentRound.failed = false;
 
         this.currentRound.team1Total =
-          finalTeam1Points +
-          team1Bids;
+          finalTeam1Points + team1Bids;
 
         this.currentRound.team2Total =
-          finalTeam2Points +
-          team2Bids;
+          finalTeam2Points + team2Bids;
 
       }
 
@@ -1012,41 +1011,33 @@ export class FourPlayer implements OnChanges {
 
     else if (callerTeam === 1) {
 
+      const callerTotal =
+        finalTeam2Points + team2Bids;
+
       if (
-        finalTeam2Points <
+        callerTotal <
         requiredPoints
       ) {
 
-        /*
-          Tim 2 je pao.
-
-          Sve ide Timu 1.
-        */
-
         this.currentRound.failed = true;
 
-        this.currentRound.team2Total = 0;
+        this.currentRound.team2Total =
+          finalTeam2Points + team2Bids;
 
         this.currentRound.team1Total =
-          totalRoundValue;
+          finalTeam1Points + team1Bids;
 
       }
 
       else {
 
-        /*
-          Tim 2 je prošao.
-        */
-
         this.currentRound.failed = false;
 
         this.currentRound.team1Total =
-          finalTeam1Points +
-          team1Bids;
+          finalTeam1Points + team1Bids;
 
         this.currentRound.team2Total =
-          finalTeam2Points +
-          team2Bids;
+          finalTeam2Points + team2Bids;
 
       }
 
@@ -1225,30 +1216,125 @@ export class FourPlayer implements OnChanges {
   /*
     Provjera pobjednika.
   */
-
+  
   checkWinner() {
 
-    for (
-      let i = 0;
-      i < this.teams.length;
-      i++
+    /*
+      Ako partija već ima pobjednika,
+      ne provjeravamo ponovno.
+    */
+    if (this.gameFinished) {
+      return;
+    }
+
+    const team1Score = this.teams[0].score;
+    const team2Score = this.teams[1].score;
+
+    /*
+      Nitko još nije dosegnuo cilj.
+    */
+    if (
+      team1Score < this.targetScore &&
+      team2Score < this.targetScore
+    ) {
+      return;
+    }
+
+    /*
+      Obje ekipe su prešle cilj
+      u istoj rundi.
+
+      Pobjeđuje ekipa s više bodova.
+    */
+    if (
+      team1Score >= this.targetScore &&
+      team2Score >= this.targetScore
     ) {
 
-      if (
-        this.teams[i].score >=
-        this.targetScore
-      ) {
+      if (team1Score > team2Score) {
 
-        this.gameFinished = true;
+        this.finishGame(0);
 
-        this.winnerTeam = i;
+      }
+      else if (team2Score > team1Score) {
 
-        return;
+        this.finishGame(1);
 
       }
 
+      return;
     }
 
+    /*
+      Samo Tim 1 je dosegnuo cilj.
+    */
+    if (team1Score >= this.targetScore) {
+
+      this.finishGame(0);
+
+      return;
+    }
+
+    /*
+      Samo Tim 2 je dosegnuo cilj.
+    */
+    if (team2Score >= this.targetScore) {
+
+      this.finishGame(1);
+
+      return;
+    }
+
+  }
+
+  finishGame(teamIndex: number) {
+
+    this.gameFinished = true;
+
+    this.winnerTeam = teamIndex;
+
+    /*
+      Povećavamo broj osvojenih partija.
+    */
+    this.gamesWon[teamIndex]++;
+
+    this.cdr.detectChanges();
+  }
+
+  startNewGame() {
+
+    /*
+      Rezultat trenutne partije vraćamo na 0:0.
+    */
+    this.teams[0].score = 0;
+    this.teams[1].score = 0;
+
+    /*
+      Brišemo odigrane runde.
+    */
+    this.rounds = [];
+
+    /*
+      Brišemo trenutno otvorenu rundu.
+    */
+    this.currentRound = null;
+
+    /*
+      Ponovno omogućujemo igru.
+    */
+    this.gameFinished = false;
+
+    /*
+      Nema pobjednika trenutne partije.
+    */
+    this.winnerTeam = -1;
+
+    /*
+      Nema ručnog unosa.
+    */
+    this.manualTeam = -1;
+
+    this.cdr.detectChanges();
   }
 
 
