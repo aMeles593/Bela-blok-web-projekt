@@ -48,17 +48,7 @@ interface Round {
 
   failed: boolean;
 
-  /*
-    Štiglja
-  */
   stiglja: boolean;
-
-  /*
-    Tim koji je imao štiglju.
-    0 = Tim 1
-    1 = Tim 2
-    -1 = nema štiglje
-  */
   stigljaTeam: number;
 }
 
@@ -82,80 +72,23 @@ export class FourPlayer implements OnChanges {
   @Input()
   targetScore = 701;
 
-
-  /*
-    Ekipe
-  */
-
   teams: Team[] = [];
-
-
-  /*
-    Odigrane runde
-  */
 
   rounds: Round[] = [];
 
-
-  /*
-    Trenutna runda
-  */
-
   currentRound: Round | null = null;
-
-
-  /*
-    Koji tim trenutno ručno
-    unosi bodove?
-
-    0 = Tim 1
-    1 = Tim 2
-    -1 = još nije odabran
-  */
 
   manualTeam = -1;
 
-
-  /*
-    Je li igra završila?
-  */
-
   gameFinished = false;
-
-
-  /*
-    Pobjednička ekipa
-  */
 
   winnerTeam = -1;
 
-    /*
-    Broj osvojenih partija.
-
-    0 = Tim 1
-    1 = Tim 2
-  */
   gamesWon: number[] = [0, 0];
-
-
-  /*
-    Bodovi iz jedne normalne runde
-  */
 
   readonly GAME_POINTS = 162;
 
-
-  /*
-    Bonus za štiglju
-  */
-
   readonly STIGLJA_POINTS = 90;
-
-
-  /*
-    Kada se učitaju igrači,
-    napravimo dvije ekipe.
-  */
 
   ngOnChanges(changes: SimpleChanges) {
 
@@ -169,15 +102,6 @@ export class FourPlayer implements OnChanges {
     }
 
   }
-
-
-  /*
-    TIM 1:
-    Igrač 1 + Igrač 2
-
-    TIM 2:
-    Igrač 3 + Igrač 4
-  */
 
   createTeams() {
 
@@ -205,16 +129,10 @@ export class FourPlayer implements OnChanges {
       }
 
     ];
-
-
     this.cdr.detectChanges();
 
   }
 
-
-  /*
-    Vraća imena igrača ekipe.
-  */
 
   getTeamPlayerNames(
     teamIndex: number
@@ -232,10 +150,6 @@ export class FourPlayer implements OnChanges {
 
   }
 
-
-  /*
-    Otvaranje nove runde.
-  */
 
   openNewRound() {
 
@@ -288,11 +202,6 @@ export class FourPlayer implements OnChanges {
 
   }
 
-
-  /*
-    Dodavanje zvanja.
-  */
-
   addBid() {
 
     if (!this.currentRound) {
@@ -313,11 +222,6 @@ export class FourPlayer implements OnChanges {
 
   }
 
-
-  /*
-    Brisanje zvanja.
-  */
-
   removeBid(index: number) {
 
     if (!this.currentRound) {
@@ -335,10 +239,6 @@ export class FourPlayer implements OnChanges {
 
   }
 
-
-  /*
-    Računanje zvanja po ekipama.
-  */
 
   calculateBids() {
 
@@ -394,14 +294,6 @@ export class FourPlayer implements OnChanges {
   }
 
 
-  /*
-    KORISNIK UNOSI BODOVE ZA TIM 1.
-    
-    Tim 2 se automatski računa:
-    
-    162 - Tim 1
-  */
-
   updateTeam1Points() {
 
     if (!this.currentRound) {
@@ -412,8 +304,6 @@ export class FourPlayer implements OnChanges {
 
     const value = this.currentRound.team1Points as any;
 
-    // Ako je input trenutno prazan,
-    // ne računamo ništa.
     if (
       value === '' ||
       value === null ||
@@ -431,7 +321,6 @@ export class FourPlayer implements OnChanges {
       return;
     }
 
-    // Ograničenje 0 - 162
     points = Math.max(
       0,
       Math.min(
@@ -442,8 +331,6 @@ export class FourPlayer implements OnChanges {
 
     this.currentRound.team1Points = points;
 
-    // Ako nije štiglja,
-    // Tim 2 automatski dobiva ostatak.
     if (!this.currentRound.stiglja) {
 
       this.currentRound.team2Points =
@@ -457,14 +344,6 @@ export class FourPlayer implements OnChanges {
   }
 
 
-    /*
-      KORISNIK UNOSI BODOVE ZA TIM 2.
-      
-      Tim 1 se automatski računa:
-      
-      162 - Tim 2
-    */
-
   updateTeam2Points() {
 
     if (!this.currentRound) {
@@ -475,8 +354,6 @@ export class FourPlayer implements OnChanges {
 
     const value = this.currentRound.team2Points as any;
 
-    // Ako je input trenutno prazan,
-    // ne računamo ništa.
     if (
       value === '' ||
       value === null ||
@@ -494,7 +371,6 @@ export class FourPlayer implements OnChanges {
       return;
     }
 
-    // Ograničenje 0 - 162
     points = Math.max(
       0,
       Math.min(
@@ -505,8 +381,6 @@ export class FourPlayer implements OnChanges {
 
     this.currentRound.team2Points = points;
 
-    // Ako nije štiglja,
-    // Tim 1 automatski dobiva ostatak.
     if (!this.currentRound.stiglja) {
 
       this.currentRound.team1Points =
@@ -520,10 +394,6 @@ export class FourPlayer implements OnChanges {
   }
 
 
-  /*
-    Promjena štiglje.
-  */
-
   updateStiglja() {
 
     if (!this.currentRound) {
@@ -531,18 +401,7 @@ export class FourPlayer implements OnChanges {
     }
 
 
-    /*
-      Ako je štiglja uključena,
-      korisnik mora odabrati
-      koja je ekipa imala 0.
-    */
-
     if (this.currentRound.stiglja) {
-
-      /*
-        Ako još nije odabran tim,
-        ne mijenjamo bodove.
-      */
 
       if (
         this.currentRound.stigljaTeam === -1
@@ -559,10 +418,6 @@ export class FourPlayer implements OnChanges {
         this.currentRound.stigljaTeam === 0
       ) {
 
-        /*
-          Tim 1 ima 0.
-        */
-
         this.currentRound.team1Points = 0;
 
         this.currentRound.team2Points =
@@ -576,10 +431,6 @@ export class FourPlayer implements OnChanges {
         this.currentRound.stigljaTeam === 1
       ) {
 
-        /*
-          Tim 2 ima 0.
-        */
-
         this.currentRound.team2Points = 0;
 
         this.currentRound.team1Points =
@@ -592,12 +443,6 @@ export class FourPlayer implements OnChanges {
     }
 
     else {
-
-      /*
-        Ako se štiglja isključi,
-        vraćamo normalno računanje
-        prema ručno odabranom timu.
-      */
 
       this.currentRound.stigljaTeam = -1;
 
@@ -632,10 +477,6 @@ export class FourPlayer implements OnChanges {
   }
 
 
-  /*
-    Odabir ekipe koja ima štiglju.
-  */
-
   setStigljaTeam(
     teamIndex: number
   ) {
@@ -653,12 +494,6 @@ export class FourPlayer implements OnChanges {
       teamIndex;
 
 
-    /*
-      Ako Tim 1 ima štiglju:
-      Tim 1 = 0
-      Tim 2 = 162
-    */
-
     if (teamIndex === 0) {
 
       this.currentRound.team1Points = 0;
@@ -670,12 +505,6 @@ export class FourPlayer implements OnChanges {
 
     }
 
-
-    /*
-      Ako Tim 2 ima štiglju:
-      Tim 2 = 0
-      Tim 1 = 162
-    */
 
     else if (teamIndex === 1) {
 
@@ -696,10 +525,6 @@ export class FourPlayer implements OnChanges {
   }
 
 
-  /*
-    Isključivanje štiglje.
-  */
-
   removeStiglja() {
 
     if (!this.currentRound) {
@@ -714,12 +539,6 @@ export class FourPlayer implements OnChanges {
     this.currentRound.stigljaTeam =
       -1;
 
-
-    /*
-      Ponovno računamo bodove
-      prema ekipi koju je korisnik
-      zadnju ručno unosio.
-    */
 
     if (this.manualTeam === 0) {
 
@@ -747,11 +566,6 @@ export class FourPlayer implements OnChanges {
     this.cdr.detectChanges();
 
   }
-
-
-  /*
-    Glavni izračun trenutne runde.
-  */
 
   calculateCurrentRound() {
 
@@ -783,12 +597,6 @@ export class FourPlayer implements OnChanges {
         this.currentRound.team2Bids
       ) || 0;
 
-
-    /*
-      Ako nema bodova,
-      nema rezultata.
-    */
-
     if (
       team1Points === 0 &&
       team2Points === 0
@@ -805,30 +613,16 @@ export class FourPlayer implements OnChanges {
     }
 
 
-    /*
-      Vrijednost cijele runde:
-
-      162 + sva zvanja
-    */
-
     const totalRoundValue =
       this.GAME_POINTS +
       team1Bids +
       team2Bids;
 
 
-    /*
-      ŠTIGLJA
-    */
-
     if (
       this.currentRound.stiglja &&
       this.currentRound.stigljaTeam !== -1
     ) {
-
-      /*
-        Tim 1 ima štiglju.
-      */
 
       if (
         this.currentRound.stigljaTeam === 0
@@ -842,11 +636,6 @@ export class FourPlayer implements OnChanges {
           this.STIGLJA_POINTS;
 
       }
-
-
-      /*
-        Tim 2 ima štiglju.
-      */
 
       else if (
         this.currentRound.stigljaTeam === 1
@@ -867,12 +656,6 @@ export class FourPlayer implements OnChanges {
       return;
 
     }
-
-
-    /*
-      Ako nema štiglje,
-      osiguravamo da je zbroj 162.
-    */
 
     if (this.manualTeam === 0) {
 
@@ -896,12 +679,6 @@ export class FourPlayer implements OnChanges {
 
     }
 
-
-    /*
-      Ponovno dohvaćamo vrijednosti
-      nakon automatskog izračuna.
-    */
-
     const finalTeam1Points =
       Number(
         this.currentRound.team1Points
@@ -912,14 +689,6 @@ export class FourPlayer implements OnChanges {
       Number(
         this.currentRound.team2Points
       ) || 0;
-
-
-    /*
-      Ako još nije odabran
-      igrač koji je zvao,
-      samo prikažemo normalan
-      zbroj.
-    */
 
     const callerTeam =
       this.getTeamIndexByPlayer(
@@ -946,46 +715,13 @@ export class FourPlayer implements OnChanges {
     }
 
 
-    /*
-      Koliko treba za prolaz?
-
-      Mora biti VIŠE od polovice
-      ukupne vrijednosti runde.
-
-      Primjer:
-
-      162 + 20 zvanja = 182
-
-      182 / 2 = 91
-
-      Potrebno = 92
-    */
-    /* 
-      KOLIKO TREBA ZA PROLAZ
-    */
     const requiredPoints =
       Math.floor(totalRoundValue / 2) + 1;
 
-
-    /*
-      TIM 1 JE ZVAO
-    */
     if (callerTeam === 0) {
 
-      /*
-        Tim 1 mora imati više od polovice
-        ukupne vrijednosti runde.
-      */
       if (finalTeam1Points < requiredPoints) {
 
-        /*
-          TIM 1 JE PAO.
-
-          Tim 1 dobiva 0 bodova.
-
-          Tim 2 dobiva CIJELU vrijednost
-          runde uključujući sva zvanja.
-        */
         this.currentRound.failed = true;
 
         this.currentRound.team1Total = 0;
@@ -997,12 +733,6 @@ export class FourPlayer implements OnChanges {
 
       else {
 
-        /*
-          TIM 1 JE PROŠAO.
-
-          Svaka ekipa dobiva svoje
-          bodove iz igre + svoja zvanja.
-        */
         this.currentRound.failed = false;
 
         this.currentRound.team1Total =
@@ -1018,25 +748,10 @@ export class FourPlayer implements OnChanges {
     }
 
 
-    /*
-      TIM 2 JE ZVAO
-    */
     else if (callerTeam === 1) {
 
-      /*
-        Tim 2 mora imati više od polovice
-        ukupne vrijednosti runde.
-      */
       if (finalTeam2Points < requiredPoints) {
 
-        /*
-          TIM 2 JE PAO.
-
-          Tim 2 dobiva 0.
-
-          Tim 1 dobiva CIJELU vrijednost
-          runde uključujući sva zvanja.
-        */
         this.currentRound.failed = true;
 
         this.currentRound.team2Total = 0;
@@ -1048,12 +763,6 @@ export class FourPlayer implements OnChanges {
 
       else {
 
-        /*
-          TIM 2 JE PROŠAO.
-
-          Svaka ekipa dobiva svoje
-          bodove iz igre + svoja zvanja.
-        */
         this.currentRound.failed = false;
 
         this.currentRound.team1Total =
@@ -1073,22 +782,11 @@ export class FourPlayer implements OnChanges {
 
   }
 
-
-  /*
-    Spremanje runde.
-  */
-
   saveRound() {
 
     if (!this.currentRound) {
       return;
     }
-
-
-    /*
-      Mora biti odabrano
-      tko je zvao.
-    */
 
     if (
       this.currentRound.caller === ''
@@ -1102,11 +800,6 @@ export class FourPlayer implements OnChanges {
 
     }
 
-
-    /*
-      Mora biti odabran adut.
-    */
-
     if (
       this.currentRound.trump === ''
     ) {
@@ -1118,12 +811,6 @@ export class FourPlayer implements OnChanges {
       return;
 
     }
-
-
-    /*
-      Ako je štiglja uključena,
-      mora biti odabran tim.
-    */
 
     if (
       this.currentRound.stiglja &&
@@ -1137,12 +824,6 @@ export class FourPlayer implements OnChanges {
       return;
 
     }
-
-
-    /*
-      Ako nije štiglja,
-      bodovi moraju ukupno biti 162.
-    */
 
     const team1Points =
       Number(
@@ -1170,20 +851,9 @@ export class FourPlayer implements OnChanges {
 
     }
 
-
-    /*
-      Ponovno računamo zvanja
-      i rezultat.
-    */
-
     this.calculateBids();
 
     this.calculateCurrentRound();
-
-
-    /*
-      Spremamo kopiju runde.
-    */
 
     const savedRound: Round = {
 
@@ -1195,19 +865,9 @@ export class FourPlayer implements OnChanges {
 
     };
 
-
-    /*
-      Dodajemo rundu.
-    */
-
     this.rounds.push(
       savedRound
     );
-
-
-    /*
-      Dodajemo rezultat ekipama.
-    */
 
     this.teams[0].score +=
       savedRound.team1Total;
@@ -1216,17 +876,7 @@ export class FourPlayer implements OnChanges {
     this.teams[1].score +=
       savedRound.team2Total;
 
-
-    /*
-      Provjeravamo pobjednika.
-    */
-
     this.checkWinner();
-
-
-    /*
-      Zatvaramo rundu.
-    */
 
     this.currentRound = null;
 
@@ -1237,17 +887,9 @@ export class FourPlayer implements OnChanges {
 
   }
 
-
-  /*
-    Provjera pobjednika.
-  */
   
   checkWinner() {
 
-    /*
-      Ako partija već ima pobjednika,
-      ne provjeravamo ponovno.
-    */
     if (this.gameFinished) {
       return;
     }
@@ -1255,9 +897,6 @@ export class FourPlayer implements OnChanges {
     const team1Score = this.teams[0].score;
     const team2Score = this.teams[1].score;
 
-    /*
-      Nitko još nije dosegnuo cilj.
-    */
     if (
       team1Score < this.targetScore &&
       team2Score < this.targetScore
@@ -1265,12 +904,6 @@ export class FourPlayer implements OnChanges {
       return;
     }
 
-    /*
-      Obje ekipe su prešle cilj
-      u istoj rundi.
-
-      Pobjeđuje ekipa s više bodova.
-    */
     if (
       team1Score >= this.targetScore &&
       team2Score >= this.targetScore
@@ -1290,9 +923,6 @@ export class FourPlayer implements OnChanges {
       return;
     }
 
-    /*
-      Samo Tim 1 je dosegnuo cilj.
-    */
     if (team1Score >= this.targetScore) {
 
       this.finishGame(0);
@@ -1300,9 +930,6 @@ export class FourPlayer implements OnChanges {
       return;
     }
 
-    /*
-      Samo Tim 2 je dosegnuo cilj.
-    */
     if (team2Score >= this.targetScore) {
 
       this.finishGame(1);
@@ -1318,9 +945,6 @@ export class FourPlayer implements OnChanges {
 
     this.winnerTeam = teamIndex;
 
-    /*
-      Povećavamo broj osvojenih partija.
-    */
     this.gamesWon[teamIndex]++;
 
     this.cdr.detectChanges();
@@ -1328,44 +952,21 @@ export class FourPlayer implements OnChanges {
 
   startNewGame() {
 
-    /*
-      Rezultat trenutne partije vraćamo na 0:0.
-    */
     this.teams[0].score = 0;
     this.teams[1].score = 0;
 
-    /*
-      Brišemo odigrane runde.
-    */
     this.rounds = [];
 
-    /*
-      Brišemo trenutno otvorenu rundu.
-    */
     this.currentRound = null;
 
-    /*
-      Ponovno omogućujemo igru.
-    */
     this.gameFinished = false;
 
-    /*
-      Nema pobjednika trenutne partije.
-    */
     this.winnerTeam = -1;
 
-    /*
-      Nema ručnog unosa.
-    */
     this.manualTeam = -1;
 
     this.cdr.detectChanges();
   }
-
-
-  /*
-    Dohvaća ekipu kojoj igrač pripada.
-  */
 
   getTeamIndexByPlayer(
     username: string
@@ -1402,11 +1003,6 @@ export class FourPlayer implements OnChanges {
 
   }
 
-
-  /*
-    Rezultat runde.
-  */
-
   getRoundResult(
     round: Round
   ): string {
@@ -1414,11 +1010,6 @@ export class FourPlayer implements OnChanges {
     return `${round.team1Total} : ${round.team2Total}`;
 
   }
-
-
-  /*
-    Ukupna zvanja trenutne runde.
-  */
 
   getTotalBids(): number {
 
@@ -1434,11 +1025,6 @@ export class FourPlayer implements OnChanges {
 
   }
 
-
-  /*
-    Ukupna vrijednost runde.
-  */
-
   getCurrentRoundValue(): number {
 
     return (
@@ -1447,11 +1033,6 @@ export class FourPlayer implements OnChanges {
     );
 
   }
-
-
-  /*
-    Potrebno za prolaz.
-  */
 
   getRequiredPoints(): number {
 
@@ -1464,10 +1045,6 @@ export class FourPlayer implements OnChanges {
   }
 
 
-  /*
-    Trenutni rezultat Tim 1.
-  */
-
   getTeam1Preview(): number {
 
     if (!this.currentRound) {
@@ -1479,11 +1056,6 @@ export class FourPlayer implements OnChanges {
 
   }
 
-
-  /*
-    Trenutni rezultat Tim 2.
-  */
-
   getTeam2Preview(): number {
 
     if (!this.currentRound) {
@@ -1494,12 +1066,6 @@ export class FourPlayer implements OnChanges {
     return this.currentRound.team2Total;
 
   }
-
-
-  /*
-    Koliko bodova štiglje
-    ide pojedinom timu.
-  */
 
   getStigljaPoints(
     teamIndex: number
@@ -1534,10 +1100,6 @@ export class FourPlayer implements OnChanges {
   }
 
 
-  /*
-    Tekst PROŠAO / PAD.
-  */
-
   getRoundStatus(): string {
 
     if (!this.currentRound) {
@@ -1553,12 +1115,6 @@ export class FourPlayer implements OnChanges {
 
     }
 
-
-    /*
-      Ako još nema pozivatelja,
-      nema statusa.
-    */
-
     if (
       this.currentRound.caller === ''
     ) {
@@ -1571,11 +1127,6 @@ export class FourPlayer implements OnChanges {
     return 'PROŠAO';
 
   }
-
-
-  /*
-    Tekst za štiglju.
-  */
 
   getStigljaText(
     round: Round
