@@ -1348,32 +1348,35 @@ input:focus {
     box-shadow: 0 4px 10px rgba(46, 125, 50, 0.25);
   }
 }
-
 .game-actions {
+  width: 100%;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-top: 25px;
+  margin-top: 20px;
 }
 
+/* Oba gumba iste veličine */
 .new-game-button,
 .finish-game-button {
-  border: none;
+  width: 180px;
+  height: 48px;
+
   border-radius: 12px;
-  padding: 12px 22px;
   font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
+  font-weight: 700;
 
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 
   span {
     font-size: 19px;
@@ -1388,11 +1391,12 @@ input:focus {
   }
 }
 
-/* NOVA PARTIJA */
-
+/* Nova partija - lijevo */
 .new-game-button {
   background: #2f8f5b;
   color: white;
+  border: none;
+
   box-shadow: 0 4px 12px rgba(47, 143, 91, 0.25);
 
   &:hover {
@@ -1401,17 +1405,19 @@ input:focus {
   }
 }
 
-/* ZAVRŠI IGRU */
-
+/* Završi igru - desno */
 .finish-game-button {
   background: #f1f3f5;
   color: #444;
+
   border: 1px solid #d9dde1;
+
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 
   &:hover {
     background: #e4e7ea;
     color: #222;
+
     box-shadow: 0 5px 14px rgba(0, 0, 0, 0.12);
   }
 }
