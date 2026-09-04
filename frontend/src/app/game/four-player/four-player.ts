@@ -62,25 +62,16 @@ export class FourPlayer implements OnChanges {
 
   @Input()
   targetScore = 701;
-
   teams: Team[] = [];
-
   rounds: Round[] = [];
-
   currentRound: Round | null = null;
-
   editingRoundIndex: number | null = null;
-
   manualTeam = -1;
-
-  gameFinished = false;
-
+  partyWins = [0, 0];
+  partyNumber = 1;
+  partyFinished = false;
   winnerTeam = -1;
-
-  gamesWon: number[] = [0, 0];
-
   readonly GAME_POINTS = 162;
-
   readonly STIGLJA_POINTS = 90;
 
   ngOnChanges(changes: SimpleChanges) {
@@ -146,7 +137,7 @@ export class FourPlayer implements OnChanges {
 
   openNewRound() {
 
-    if (this.gameFinished) {
+    if (this.partyFinished) {
       return;
     }
 
@@ -196,7 +187,7 @@ export class FourPlayer implements OnChanges {
   }
 
   editRound(index: number) {
-    if (this.gameFinished) return;
+    if (this.partyFinished) return;
     if (this.currentRound !== null) return;
 
     const round = this.rounds[index];
@@ -988,70 +979,48 @@ export class FourPlayer implements OnChanges {
 
   }
 
-  
   checkWinner() {
-
-    if (this.gameFinished) {
-      return;
-    }
-
     const team1Score = this.teams[0].score;
     const team2Score = this.teams[1].score;
 
-    if (
-      team1Score < this.targetScore &&
-      team2Score < this.targetScore
-    ) {
-      return;
-    }
+    const team1Reached = team1Score >= this.targetScore;
+    const team2Reached = team2Score >= this.targetScore;
 
-    if (
-      team1Score >= this.targetScore &&
-      team2Score >= this.targetScore
-    ) {
+    let winner = -1;
 
+    // Ako su obje ekipe dosegle cilj u istoj rundi,
+    // pobjeđuje ona s više bodova.
+    if (team1Reached && team2Reached) {
       if (team1Score > team2Score) {
-
-        this.finishGame(0);
-
+        winner = 0;
+      } else if (team2Score > team1Score) {
+        winner = 1;
       }
-      else if (team2Score > team1Score) {
-
-        this.finishGame(1);
-
-      }
-
-      return;
     }
 
-    if (team1Score >= this.targetScore) {
-
-      this.finishGame(0);
-
-      return;
+    // Samo Tim 1 je dosegao cilj
+    else if (team1Reached) {
+      winner = 0;
     }
 
-    if (team2Score >= this.targetScore) {
-
-      this.finishGame(1);
-
-      return;
+    // Samo Tim 2 je dosegao cilj
+    else if (team2Reached) {
+      winner = 1;
     }
 
+    if (winner !== -1) {
+      this.partyWins[winner]++;
+      this.partyFinished = true;
+      this.winnerTeam = winner;
+    }
   }
 
-  finishGame(teamIndex: number) {
+  startNewParty() {
+    if (!this.partyFinished) {
+      return;
+    }
 
-    this.gameFinished = true;
-
-    this.winnerTeam = teamIndex;
-
-    this.gamesWon[teamIndex]++;
-
-    this.cdr.detectChanges();
-  }
-
-  startNewGame() {
+    this.partyNumber++;
 
     this.teams[0].score = 0;
     this.teams[1].score = 0;
@@ -1060,7 +1029,7 @@ export class FourPlayer implements OnChanges {
 
     this.currentRound = null;
 
-    this.gameFinished = false;
+    this.partyFinished = false;
 
     this.winnerTeam = -1;
 

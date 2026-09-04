@@ -23,6 +23,43 @@
     </div>
 
   </section>
+
+  <div class="parties-scoreboard">
+
+    <div class="parties-scoreboard-header">
+      <span class="parties-label">PARTIJE</span>
+      <span class="current-party">
+        Partija {{ partyNumber }}
+      </span>
+    </div>
+
+    <div class="parties-score">
+      <div class="party-team">
+        <span class="party-team-name">
+          {{ getTeamPlayerNames(0) }}
+        </span>
+
+        <span class="party-wins">
+          {{ partyWins[0] }}
+        </span>
+      </div>
+
+      <div class="party-separator">
+        :
+      </div>
+
+      <div class="party-team">
+        <span class="party-wins">
+          {{ partyWins[1] }}
+        </span>
+
+        <span class="party-team-name">
+          {{ getTeamPlayerNames(1) }}
+        </span>
+      </div>
+    </div>
+
+  </div>
     
   <!-- ==========================================
       REZULTAT TRENUTNE PARTIJE
@@ -42,7 +79,7 @@
         <div
           class="scoreboard-team"
           [class.winner]="
-            gameFinished &&
+            partyFinished &&
             winnerTeam === $index
           "
         >
@@ -80,7 +117,7 @@
         </span>
 
         <strong>
-          {{ gamesWon[0] }}
+          {{ partyWins[0] }}
         </strong>
 
       </div>
@@ -92,7 +129,7 @@
       <div class="games-team">
 
         <strong>
-          {{ gamesWon[1] }}
+          {{ partyWins[1] }}
         </strong>
 
         <span>
@@ -110,7 +147,7 @@
        KRAJ IGRE
   =========================================== -->
 
-  @if (gameFinished) {
+  @if (partyFinished) {
 
     <div class="game-finished">
 
@@ -137,7 +174,7 @@
       KRAJ PARTIJE
   =========================================== -->
 
-  @if (gameFinished) {
+  @if (partyFinished) {
 
     <section class="game-finished">
 
@@ -178,7 +215,7 @@
           Omjer partija:
 
           <strong>
-            {{ gamesWon[0] }} : {{ gamesWon[1] }}
+            {{ partyWins[0] }} : {{ partyWins[1] }}
           </strong>
 
         </p>
@@ -186,7 +223,7 @@
         <button
           type="button"
           class="new-game-button"
-          (click)="startNewGame()"
+          (click)="startNewParty()"
         >
           NOVA PARTIJA
         </button>
@@ -213,7 +250,7 @@
         (click)="openNewRound()"
         [disabled]="
           currentRound !== null ||
-          gameFinished
+          partyFinished
         "
       >
         + NOVA RUNDA
@@ -227,7 +264,7 @@
     @if (
       rounds.length === 0 &&
       currentRound === null &&
-      !gameFinished
+      !partyFinished
     ) {
 
       <div class="empty-rounds">
@@ -239,7 +276,7 @@
         <button
           class="new-round-button"
           (click)="openNewRound()"
-          [disabled]="gameFinished"
+          [disabled]="partyFinished"
         >
           ZAPOČNI PRVU RUNDU
         </button>

@@ -1180,3 +1180,132 @@ input:focus {
     box-shadow: none;
   }
 }
+
+.parties-scoreboard {
+  width: 100%;
+  margin-bottom: 25px;
+  padding: 20px 24px;
+
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    #f4faf5
+  );
+
+  border: 1px solid #dcebdd;
+  border-radius: 16px;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.parties-scoreboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 15px;
+}
+
+.parties-label {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #2e7d32;
+}
+
+.current-party {
+  padding: 5px 10px;
+
+  border-radius: 8px;
+
+  background: #e8f5e9;
+  color: #2e7d32;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.parties-score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 20px;
+}
+
+.party-team {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.party-team:first-child {
+  justify-content: flex-end;
+}
+
+.party-team:last-child {
+  justify-content: flex-start;
+}
+
+.party-team-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.party-wins {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  border-radius: 12px;
+
+  background: #2e7d32;
+  color: white;
+
+  font-size: 21px;
+  font-weight: 800;
+
+  box-shadow: 0 3px 8px rgba(46, 125, 50, 0.2);
+}
+
+.party-separator {
+  font-size: 24px;
+  font-weight: 700;
+  color: #9ca3af;
+}
+
+@media (max-width: 600px) {
+
+  .parties-scoreboard {
+    padding: 16px;
+  }
+
+  .parties-score {
+    gap: 10px;
+  }
+
+  .party-team {
+    gap: 7px;
+  }
+
+  .party-team-name {
+    font-size: 12px;
+  }
+
+  .party-wins {
+    width: 36px;
+    height: 36px;
+
+    font-size: 18px;
+  }
+
+  .party-separator {
+    font-size: 20px;
+  }
+}
