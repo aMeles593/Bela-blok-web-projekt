@@ -182,6 +182,62 @@ const saveGame = async (req, res) => {
   }
 };
 
+const getGames = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        g.id,
+        g.target_score,
+        g.started_at,
+        g.finished_at,
+        g.team1_party_wins,
+        g.team2_party_wins,
+
+        COUNT(DISTINCT p.id) AS party_count,
+
+        STRING_AGG(
+          u.username,
+          ', ' ORDER BY gp.team, gp.id
+        ) AS players
+
+      FROM games g
+
+      LEFT JOIN game_players gp
+        ON gp.game_id = g.id
+
+      LEFT JOIN users u
+        ON u.id = gp.user_id
+
+      LEFT JOIN parties p
+        ON p.game_id = g.id
+
+      GROUP BY
+        g.id,
+        g.target_score,
+        g.started_at,
+        g.finished_at,
+        g.team1_party_wins,
+        g.team2_party_wins
+
+      ORDER BY g.id DESC
+    `);
+
+    res.json(result.rows);
+
+  } catch (error) {
+
+    console.error(
+      'Greška kod dohvaćanja igara:',
+      error
+    );
+
+    res.status(500).json({
+      message: 'Greška kod dohvaćanja igara.'
+    });
+  }
+};
+
 module.exports = {
-  saveGame
+  saveGame,
+  getGames
 };

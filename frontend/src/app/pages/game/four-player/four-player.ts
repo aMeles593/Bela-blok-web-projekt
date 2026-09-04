@@ -1,7 +1,7 @@
 import {Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { GamesService } from '../../services/games';
+import { GamesService } from '../../../services/games';
 
 interface GamePlayer {
   id: number;

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../services/auth';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-register',

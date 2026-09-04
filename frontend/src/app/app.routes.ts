@@ -1,12 +1,13 @@
 import { Routes } from '@angular/router';
 
-import { Home } from './home/home';
-import { Players } from './players/players';
-import { Register } from './register/register';
-import { Login } from './login/login';
+import { Home } from './pages/home/home';
+import { Players } from './pages/players/players';
+import { Register } from './pages/register/register';
+import { Login } from './pages/login/login';
 import { authGuard } from './guards/auth-guard';
-import { Game } from './game/game';
-import { GameOptions } from './game-options/game-options';
+import { Game } from './pages/game/game';
+import { GameOptions } from './pages/game-options/game-options';
+import { HistoryGames } from './pages/history-games/history-games';
 
 export const routes: Routes = [
 
@@ -39,6 +40,11 @@ export const routes: Routes = [
     path: 'game-options',
     component: GameOptions
   },
+  {
+    path: 'history-games',
+    component: HistoryGames,
+    canActivate: [authGuard]
+  }
 
 
 ];

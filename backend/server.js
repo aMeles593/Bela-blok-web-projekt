@@ -13,7 +13,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
-app.use('/api/games', gamesRoutes);
+app.use('/api/history-games', gamesRoutes);
 
 app.get('/api/test', (req, res) => {
   res.json({

@@ -1,0 +1,138 @@
+<div class="games-page">
+
+  <div class="page-header">
+
+    <div>
+      <h1>📜 Povijest igara</h1>
+
+      <p>
+        Pregled svih odigranih igara
+      </p>
+    </div>
+
+  </div>
+
+
+  @if (loading) {
+
+    <div class="loading">
+      Učitavanje igara...
+    </div>
+
+  }
+
+  @else if (games.length === 0) {
+
+    <div class="empty">
+
+      <div class="empty-icon">
+        🎴
+      </div>
+
+      <h2>Nema odigranih igara</h2>
+
+      <p>
+        Kada završiš svoju prvu igru,
+        pojavit će se ovdje.
+      </p>
+
+    </div>
+
+  }
+
+  @else {
+
+    <p style="color: red; font-size: 30px;">
+        BROJ IGARA: {{ games.length }}
+    </p>
+
+    <div class="games-list">
+
+      @for (game of games; track game.id) {
+
+        <div class="game-card">
+
+          <div class="game-card-header">
+
+            <div>
+
+              <span class="game-number">
+                Igra #{{ game.id }}
+              </span>
+
+              <span class="game-date">
+                {{ formatDate(game.finished_at) }}
+              </span>
+
+            </div>
+
+            <div class="target-score">
+              Cilj: {{ game.target_score }}
+            </div>
+
+          </div>
+
+
+          <div class="players">
+
+            {{ game.players }}
+
+          </div>
+
+
+          <div class="game-result">
+
+            <div class="team">
+
+              <span>
+                Tim 1
+              </span>
+
+              <strong>
+                {{ game.team1_party_wins }}
+              </strong>
+
+            </div>
+
+
+            <div class="result-separator">
+              :
+            </div>
+
+
+            <div class="team">
+
+              <span>
+                Tim 2
+              </span>
+
+              <strong>
+                {{ game.team2_party_wins }}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="game-footer">
+
+            <span>
+              {{ game.party_count }} partija
+            </span>
+
+            <button>
+              Pogledaj detalje →
+            </button>
+
+          </div>
+
+        </div>
+
+      }
+
+    </div>
+
+  }
+
+</div>

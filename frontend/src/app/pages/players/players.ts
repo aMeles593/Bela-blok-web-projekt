@@ -16,7 +16,7 @@ import {
 
 import {
   AuthService
-} from '../services/auth';
+} from '../../services/auth';
 
 
 interface User {

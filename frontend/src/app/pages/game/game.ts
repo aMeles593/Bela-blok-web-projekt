@@ -8,7 +8,7 @@ import {
 
 import { ActivatedRoute } from '@angular/router';
 
-import { AuthService } from '../services/auth';
+import { AuthService } from '../../services/auth';
 
 import { FourPlayer } from './four-player/four-player';
 
