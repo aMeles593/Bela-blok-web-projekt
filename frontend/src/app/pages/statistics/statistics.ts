@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { StatisticsService, PlayerStatistics } from '../../services/statistics';
 
@@ -12,6 +12,7 @@ import { StatisticsService, PlayerStatistics } from '../../services/statistics';
 export class Statistics {
 
   private statisticsService = inject(StatisticsService);
+  private cdr = inject(ChangeDetectorRef);
 
   players: PlayerStatistics[] = [];
 
@@ -32,16 +33,18 @@ export class Statistics {
         this.players = statistics;
 
         if (this.players.length > 0) {
+
           this.totalGames = this.players[0].gamesPlayed;
+
           this.totalParties = this.players[0].partiesPlayed;
+
+          this.totalRounds = this.players[0].roundsPlayed;
+
         }
 
-        this.totalRounds = this.players.reduce(
-          (sum, player) => sum + player.roundsPlayed,
-          0
-        );
-
         this.loading = false;
+
+        this.cdr.detectChanges();
       },
 
       error: (error) => {
