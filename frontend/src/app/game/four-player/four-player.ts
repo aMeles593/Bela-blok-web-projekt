@@ -1,6 +1,7 @@
 import {Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { GamesService } from '../../services/games';
 
 interface GamePlayer {
   id: number;
@@ -47,6 +48,7 @@ export class FourPlayer implements OnChanges {
 
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
+  private gamesService = inject(GamesService);
 
 
   @Input()
@@ -64,6 +66,7 @@ export class FourPlayer implements OnChanges {
   partyNumber = 1;
   partyFinished = false;
   winnerTeam = -1;
+  completedParties: any[] = [];
   readonly GAME_POINTS = 162;
   readonly STIGLJA_POINTS = 90;
 
@@ -1005,6 +1008,25 @@ export class FourPlayer implements OnChanges {
       this.partyWins[winner]++;
       this.partyFinished = true;
       this.winnerTeam = winner;
+
+      // Spremi završenu partiju
+      this.completedParties.push({
+        partyNumber: this.partyNumber,
+        team1Score: team1Score,
+        team2Score: team2Score,
+        winningTeam: winner + 1,
+        rounds: this.rounds.map(round => ({
+          ...round,
+          bids: round.bids.map(bid => ({
+            ...bid
+          }))
+        }))
+      });
+
+      console.log(
+        'Završena partija:',
+        this.completedParties
+      );
     }
   }
 
@@ -1221,8 +1243,98 @@ export class FourPlayer implements OnChanges {
     return '';
 
   }
+
+  getPlayerIdByUsername(username: string): number | null {
+    const player = this.players.find(
+      p => p.username === username
+    );
+
+    return player ? player.id : null;
+  }
+
   finishAllGames() {
-    this.router.navigate(['/']);
+
+    const gameData = {
+      targetScore: this.targetScore,
+
+      players: this.players.map((player, index) => ({
+        id: player.id,
+        team: index < 2 ? 1 : 2
+      })),
+
+      parties: this.completedParties.map(party => ({
+        partyNumber: party.partyNumber,
+        team1Score: party.team1Score,
+        team2Score: party.team2Score,
+        winningTeam: party.winningTeam,
+
+        rounds: party.rounds.map((round: Round) => ({
+          number: round.number,
+
+          callerId: this.getPlayerIdByUsername(
+            round.caller
+          ),
+
+          trump: round.trump,
+
+          team1Points: round.team1Points,
+          team2Points: round.team2Points,
+
+          team1Bids: round.team1Bids,
+          team2Bids: round.team2Bids,
+
+          team1Total: round.team1Total,
+          team2Total: round.team2Total,
+
+          failed: round.failed,
+
+          stiglja: round.stiglja,
+
+          stigljaTeam:
+            round.stigljaTeam === -1
+              ? null
+              : round.stigljaTeam + 1,
+
+          bids: round.bids.map(bid => ({
+            playerId: this.getPlayerIdByUsername(
+              bid.player
+            ),
+            points: Number(bid.points) || 0
+          }))
+        }))
+      }))
+    };
+
+    console.log(
+      'Šaljem igru:',
+      JSON.stringify(gameData, null, 2)
+    );
+
+    this.gamesService.saveGame(gameData).subscribe({
+      next: (response) => {
+
+        console.log(
+          'Igra spremljena:',
+          response
+        );
+
+        this.router.navigate(['/']);
+
+      },
+
+      error: (error) => {
+
+        console.error(
+          'Greška kod spremanja igre:',
+          error
+        );
+
+        alert(
+          'Greška kod spremanja igre.'
+        );
+
+      }
+    });
   }
 
 }

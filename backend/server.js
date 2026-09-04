@@ -4,6 +4,7 @@ const db = require('./db');
 
 const authRoutes = require('./routes/auth.routes');
 const usersRoutes = require('./routes/users.routes');
+const gamesRoutes = require('./routes/games.routes');
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/games', gamesRoutes);
 
 app.get('/api/test', (req, res) => {
   res.json({
