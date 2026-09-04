@@ -8,6 +8,7 @@ import { authGuard } from './guards/auth-guard';
 import { Game } from './pages/game/game';
 import { GameOptions } from './pages/game-options/game-options';
 import { HistoryGames } from './pages/history-games/history-games';
+import { Statistics } from './pages/statistics/statistics';
 
 export const routes: Routes = [
 
@@ -43,6 +44,11 @@ export const routes: Routes = [
   {
     path: 'history-games',
     component: HistoryGames,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'statistics',
+    component: Statistics,
     canActivate: [authGuard]
   }
 

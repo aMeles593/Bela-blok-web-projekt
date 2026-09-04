@@ -1,0 +1,269 @@
+<div class="statistics-page">
+
+  <!-- HEADER -->
+
+  <header class="header">
+
+    <a routerLink="/" class="logo">
+      BELA
+    </a>
+
+    <a routerLink="/" class="back-button">
+      ← Početna
+    </a>
+
+  </header>
+
+
+  <!-- SADRŽAJ -->
+
+  <main class="content">
+
+    <div class="page-title">
+
+      <h1>📊 Statistika</h1>
+
+      <p>
+        Pregled svih odigranih igara
+      </p>
+
+    </div>
+
+
+    @if (loading) {
+
+      <div class="loading">
+        Učitavanje statistike...
+      </div>
+
+    } @else {
+
+
+      <!-- SAŽETAK -->
+
+      <section class="summary">
+
+        <div class="summary-card">
+
+          <div class="summary-icon">
+            🎮
+          </div>
+
+          <div>
+
+            <span class="summary-value">
+              {{ totalGames }}
+            </span>
+
+            <span class="summary-label">
+              IGARA
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+          <div class="summary-icon">
+            🏆
+          </div>
+
+          <div>
+
+            <span class="summary-value">
+              {{ totalParties }}
+            </span>
+
+            <span class="summary-label">
+              PARTIJA
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+          <div class="summary-icon">
+            🎴
+          </div>
+
+          <div>
+
+            <span class="summary-value">
+              {{ totalRounds }}
+            </span>
+
+            <span class="summary-label">
+              RUNDI
+            </span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- RANG LISTA -->
+
+      <section class="section">
+
+        <div class="section-header">
+
+          <h2>
+            🏆 Rang-lista igrača
+          </h2>
+
+          <p>
+            Najuspješniji igrači prema postotku pobjeda
+          </p>
+
+        </div>
+
+
+        <div class="ranking">
+
+          @for (player of players; track player.id; let i = $index) {
+
+            <div class="ranking-row">
+
+              <span class="ranking-position">
+                {{ i + 1 }}
+              </span>
+
+              <span class="ranking-player">
+                {{ player.username }}
+              </span>
+
+              <span class="ranking-games">
+                {{ player.gamesPlayed }}
+                {{ player.gamesPlayed === 1 ? 'igra' : 'igara' }}
+              </span>
+
+              <span class="ranking-wins">
+                {{ player.gamesWon }}
+                {{ player.gamesWon === 1 ? 'pobjeda' : 'pobjeda' }}
+              </span>
+
+              <strong class="ranking-rate">
+                {{ player.winRate }}%
+              </strong>
+
+            </div>
+
+          }
+
+        </div>
+
+      </section>
+
+
+      <!-- DETALJNA STATISTIKA -->
+
+      <section class="section">
+
+        <div class="section-header">
+
+          <h2>
+            📈 Detaljna statistika
+          </h2>
+
+          <p>
+            Statistika igrača kroz sve odigrane igre
+          </p>
+
+        </div>
+
+
+        <div class="table-container">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>Igrač</th>
+                <th>Igre</th>
+                <th>Pobjede</th>
+                <th>Porazi</th>
+                <th>Win rate</th>
+                <th>Bodovi</th>
+                <th>Runde</th>
+                <th>Zvanja</th>
+                <th>Padovi</th>
+                <th>Štiglije</th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (player of players; track player.id) {
+
+                <tr>
+
+                  <td class="player-name">
+                    {{ player.username }}
+                  </td>
+
+                  <td>
+                    {{ player.gamesPlayed }}
+                  </td>
+
+                  <td>
+                    {{ player.gamesWon }}
+                  </td>
+
+                  <td>
+                    {{ player.gamesLost }}
+                  </td>
+
+                  <td class="win-rate">
+                    {{ player.winRate }}%
+                  </td>
+
+                  <td>
+                    {{ player.totalPoints }}
+                  </td>
+
+                  <td>
+                    {{ player.roundsPlayed }}
+                  </td>
+
+                  <td>
+                    {{ player.bids }}
+                  </td>
+
+                  <td>
+                    {{ player.failedCalls }}
+                  </td>
+
+                  <td>
+                    {{ player.stiglje }}
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+
+    }
+
+  </main>
+
+</div>
