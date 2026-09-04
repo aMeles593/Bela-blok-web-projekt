@@ -27,27 +27,18 @@ interface Bid {
   points: number;
 }
 
-
 interface Round {
   number: number;
-
   caller: string;
-
   trump: string;
-
   bids: Bid[];
-
   team1Points: number;
   team2Points: number;
-
   team1Bids: number;
   team2Bids: number;
-
   team1Total: number;
   team2Total: number;
-
   failed: boolean;
-
   stiglja: boolean;
   stigljaTeam: number;
 }
@@ -77,6 +68,8 @@ export class FourPlayer implements OnChanges {
   rounds: Round[] = [];
 
   currentRound: Round | null = null;
+
+  editingRoundIndex: number | null = null;
 
   manualTeam = -1;
 
@@ -200,6 +193,114 @@ export class FourPlayer implements OnChanges {
 
     this.cdr.detectChanges();
 
+  }
+
+  editRound(index: number) {
+    if (this.gameFinished) return;
+    if (this.currentRound !== null) return;
+
+    const round = this.rounds[index];
+
+    // Zapamti koju rundu uređujemo
+    this.editingRoundIndex = index;
+
+    // Napravi kopiju da ne mijenjamo odmah spremljenu rundu
+    this.currentRound = {
+      ...round,
+      bids: round.bids.map(bid => ({ ...bid }))
+    };
+
+    // Odredi koja ekipa je zadnja ručno unosila bodove
+    if (this.currentRound.stiglja) {
+      this.manualTeam =
+        this.currentRound.stigljaTeam === 0 ? 1 : 0;
+    } else {
+      this.manualTeam = 0;
+    }
+
+    this.calculateBids();
+    this.calculateCurrentRound();
+
+    this.cdr.detectChanges();
+  }
+
+  updateRound() {
+    if (!this.currentRound) return;
+    if (this.editingRoundIndex === null) return;
+
+    if (this.currentRound.caller === '') {
+      alert('Odaberite tko je zvao.');
+      return;
+    }
+
+    if (this.currentRound.trump === '') {
+      alert('Odaberite adut.');
+      return;
+    }
+
+    if (
+      this.currentRound.stiglja &&
+      this.currentRound.stigljaTeam === -1
+    ) {
+      alert('Odaberite koja je ekipa imala štiglju.');
+      return;
+    }
+
+    const team1Points =
+      Number(this.currentRound.team1Points) || 0;
+
+    const team2Points =
+      Number(this.currentRound.team2Points) || 0;
+
+    if (
+      !this.currentRound.stiglja &&
+      team1Points + team2Points !== this.GAME_POINTS
+    ) {
+      alert('Zbroj bodova iz igre mora biti 162.');
+      return;
+    }
+
+    // Ponovno izračunaj zvanja i rezultat
+    this.calculateBids();
+    this.calculateCurrentRound();
+
+    const index = this.editingRoundIndex;
+
+    // Makni stari rezultat runde iz ukupnog rezultata
+    const oldRound = this.rounds[index];
+
+    this.teams[0].score -= oldRound.team1Total;
+    this.teams[1].score -= oldRound.team2Total;
+
+    // Spremi novu verziju runde
+    const updatedRound: Round = {
+      ...this.currentRound,
+      bids: this.currentRound.bids.map(bid => ({ ...bid }))
+    };
+
+    this.rounds[index] = updatedRound;
+
+    // Dodaj novi rezultat
+    this.teams[0].score += updatedRound.team1Total;
+    this.teams[1].score += updatedRound.team2Total;
+
+    // Izađi iz moda uređivanja
+    this.currentRound = null;
+    this.editingRoundIndex = null;
+    this.manualTeam = -1;
+
+    // Ponovno provjeri je li netko dosegao cilj
+    this.checkWinner();
+
+    this.cdr.detectChanges();
+  }
+
+  cancelEdit() {
+    this.currentRound = null;
+    this.editingRoundIndex = null;
+    this.manualTeam = -1;
+
+    this.cdr.detectChanges();
   }
 
   addBid() {
@@ -720,7 +821,7 @@ export class FourPlayer implements OnChanges {
 
     if (callerTeam === 0) {
 
-      if (finalTeam1Points < requiredPoints) {
+      if (finalTeam1Points + team1Bids < requiredPoints) {
 
         this.currentRound.failed = true;
 
@@ -750,7 +851,7 @@ export class FourPlayer implements OnChanges {
 
     else if (callerTeam === 1) {
 
-      if (finalTeam2Points < requiredPoints) {
+      if (finalTeam2Points + team2Bids < requiredPoints) {
 
         this.currentRound.failed = true;
 

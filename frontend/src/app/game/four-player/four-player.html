@@ -903,16 +903,32 @@
              SPREMI RUNDU
         ======================================= -->
 
-        <button
-          class="save-round-button"
-          (click)="saveRound()"
-          [disabled]="
-            currentRound.caller === '' ||
-            currentRound.trump === ''
-          "
-        >
-          SPREMI RUNDU
-        </button>
+        @if (editingRoundIndex === null) {
+
+          <button
+            type="button"
+            class="save-round-button"
+            (click)="saveRound()">
+            SPREMI RUNDU
+          </button>
+
+        } @else {
+
+          <button
+            type="button"
+            class="save-round-button"
+            (click)="updateRound()">
+            SPREMI IZMJENE
+          </button>
+
+          <button
+            type="button"
+            class="cancel-edit-button"
+            (click)="cancelEdit()">
+            ODUSTANI
+          </button>
+
+        }
 
       </div>
 
@@ -931,97 +947,96 @@
           Odigrane runde
         </h3>
 
+      @for (
+        round of rounds;
+        track round.number;
+        let i = $index
+      ) {
 
-        @for (
-          round of rounds;
-          track round.number
-        ) {
+        <div class="round-card">
 
-          <div class="round-card">
+          <div class="round-info">
 
+            <strong>
+              Runda {{ round.number }}
+            </strong>
 
-            <div class="round-info">
+            <span>
+              Zvao:
+              {{ round.caller }}
+            </span>
 
-              <strong>
-                Runda {{ round.number }}
-              </strong>
+            <span>
+              Adut:
+              {{ round.trump }}
+            </span>
 
-
-              <span>
-                Zvao:
-                {{ round.caller }}
-              </span>
-
-
-              <span>
-                Adut:
-                {{ round.trump }}
-              </span>
-
-
-              <span>
-                Bodovi:
-                {{ round.team1Points }}
-                :
-                {{ round.team2Points }}
-              </span>
-
-
-              <span>
-                Zvanja:
-                {{ round.team1Bids }}
-                :
-                {{ round.team2Bids }}
-              </span>
-
-
-              @if (round.stiglja) {
-
-                <span class="stiglija-result">
-                  Štiglja:
-                  {{
-                    getTeamPlayerNames(
-                      round.stigljaTeam
-                    )
-                  }}
-                  +90
-                </span>
-
-              }
-
-
-              <span>
-                Ukupno:
-                {{ round.team1Total }}
-                :
-                {{ round.team2Total }}
-              </span>
-
-
-              @if (round.failed) {
-
-                <span class="failed">
-                  Ekipa koja je zvala nije prošla
-                </span>
-
-              }
-
-            </div>
-
-
-            <div class="round-result">
-
-              {{ round.team1Total }}
-
+            <span>
+              Bodovi:
+              {{ round.team1Points }}
               :
+              {{ round.team2Points }}
+            </span>
 
+            <span>
+              Zvanja:
+              {{ round.team1Bids }}
+              :
+              {{ round.team2Bids }}
+            </span>
+
+            @if (round.stiglja) {
+
+              <span class="stiglija-result">
+                Štiglja:
+                {{
+                  getTeamPlayerNames(
+                    round.stigljaTeam
+                  )
+                }}
+                +90
+              </span>
+
+            }
+
+            <span>
+              Ukupno:
+              {{ round.team1Total }}
+              :
               {{ round.team2Total }}
+            </span>
 
-            </div>
+            @if (round.failed) {
+
+              <span class="failed">
+                Ekipa koja je zvala nije prošla
+              </span>
+
+            }
 
           </div>
 
-        }
+
+          <div class="round-result">
+
+            <span>
+              {{ round.team1Total }}
+              :
+              {{ round.team2Total }}
+            </span>
+
+            <button
+              type="button"
+              class="edit-round-button"
+              (click)="editRound(i)">
+              ✏️ Uredi
+            </button>
+
+          </div>
+
+        </div>
+
+      }
 
       </div>
 
