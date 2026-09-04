@@ -147,29 +147,6 @@
        KRAJ IGRE
   =========================================== -->
 
-  @if (partyFinished) {
-
-    <div class="game-finished">
-
-      <h2>🎉 Kraj igre!</h2>
-
-      <p>
-        Pobijedila je ekipa:
-      </p>
-
-      <strong>
-        {{ getTeamPlayerNames(winnerTeam) }}
-      </strong>
-
-      <p>
-        Rezultat:
-        {{ teams[winnerTeam].score }}
-      </p>
-
-    </div>
-
-  }
-
   <!-- ==========================================
       KRAJ PARTIJE
   =========================================== -->
@@ -179,54 +156,27 @@
     <section class="game-finished">
 
       <div class="game-finished-content">
+        <div class="game-actions">
 
-        <h2>
-          Partija završena!
-        </h2>
+          <button
+            type="button"
+            class="new-game-button"
+            (click)="startNewParty()"
+          >
+            <span>↻</span>
+            Nova partija
+          </button>
 
-        <p class="winner-text">
-
-          Pobjednik:
-
-          <strong>
-            {{ getTeamPlayerNames(winnerTeam) }}
-          </strong>
-
-        </p>
-
-        <div class="final-score">
-
-          <span>
-            {{ teams[0].score }}
-          </span>
-
-          <strong>
-            :
-          </strong>
-
-          <span>
-            {{ teams[1].score }}
-          </span>
+          <button
+            type="button"
+            class="finish-game-button"
+            (click)="finishAllGames()"
+          >
+            <span>✓</span>
+            Završi igru
+          </button>
 
         </div>
-
-        <p class="games-result">
-
-          Omjer partija:
-
-          <strong>
-            {{ partyWins[0] }} : {{ partyWins[1] }}
-          </strong>
-
-        </p>
-
-        <button
-          type="button"
-          class="new-game-button"
-          (click)="startNewParty()"
-        >
-          NOVA PARTIJA
-        </button>
 
       </div>
 

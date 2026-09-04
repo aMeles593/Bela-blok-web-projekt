@@ -1,14 +1,6 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  SimpleChanges,
-  ChangeDetectorRef,
-  inject
-} from '@angular/core';
-
+import {Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
+import { Router } from '@angular/router';
 
 interface GamePlayer {
   id: number;
@@ -54,6 +46,7 @@ interface Round {
 export class FourPlayer implements OnChanges {
 
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
 
   @Input()
@@ -1227,6 +1220,9 @@ export class FourPlayer implements OnChanges {
 
     return '';
 
+  }
+  finishAllGames() {
+    this.router.navigate(['/']);
   }
 
 }
