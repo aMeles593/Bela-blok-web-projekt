@@ -11,6 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth';
 
 import { FourPlayer } from './four-player/four-player';
+import { TwoPlayer } from './two-player/two-player';
 
 
 interface GamePlayer {
@@ -22,7 +23,7 @@ interface GamePlayer {
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [FourPlayer],
+  imports: [FourPlayer, TwoPlayer],
   templateUrl: './game.html',
   styleUrl: './game.scss'
 })

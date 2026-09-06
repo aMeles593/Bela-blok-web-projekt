@@ -16,6 +16,13 @@
         [targetScore]="targetScore">
       </app-four-player>
 
+    } @else if (players.length === 2) {
+
+      <app-two-player
+        [players]="players"
+        [targetScore]="targetScore">
+      </app-two-player>
+
     } @else {
 
       <p>
