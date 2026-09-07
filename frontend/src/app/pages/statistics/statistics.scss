@@ -9,7 +9,6 @@
 /* =========================
    HEADER
 ========================= */
-
 .page-header {
   margin-bottom: 30px;
 
@@ -17,19 +16,15 @@
     margin: 0;
     font-size: 32px;
     font-weight: 700;
-    color: #14532d;
+    color: white;
   }
 
   p {
     margin: 8px 0 0;
-    color: #4b6352;
+    color: rgba(255, 255, 255, 0.8);
     font-size: 15px;
   }
 }
-
-/* =========================
-   NASLOVI SEKCIJA
-========================= */
 
 .section-title {
   margin: 30px 0 15px;
@@ -37,7 +32,7 @@
   h2 {
     margin: 0;
     font-size: 21px;
-    color: #14532d;
+    color: white;
   }
 }
 
@@ -620,7 +615,7 @@
   align-items: center;
   justify-content: center;
 
-  color: #166534;
+  color: white;
   font-size: 16px;
   font-weight: 600;
 }
