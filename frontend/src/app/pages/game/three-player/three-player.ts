@@ -64,7 +64,7 @@ export class ThreePlayer {
 
   scores = [0, 0, 0];
 
-  partyWins = [0, 0];
+  partyWins = [0, 0, 0];
 
   partyNumber = 1;
 
@@ -567,22 +567,24 @@ export class ThreePlayer {
 
   checkWinner(): void {
 
-    const winnerIndex =
-      this.scores.findIndex(
-        score => score >= this.targetScore
-      );
+    // Pronađi igrača koji je dosegnuo ciljani rezultat
+    const winnerIndex = this.scores.findIndex(
+      score => score >= this.targetScore
+    );
 
+    // Nitko još nije dosegnuo cilj
     if (winnerIndex === -1) {
       return;
     }
 
+    // Partija je završena
     this.partyFinished = true;
 
+    // Zapamti pobjednika
     this.winnerPlayer = winnerIndex;
 
-    // Kod 3 igrača partiju osvaja pojedinac.
-    // Za games/parties backend ćemo kasnije
-    // definirati kako spremati pobjednika.
+    // Dodaj pobjedu tom igraču
+    this.partyWins[winnerIndex]++;
 
   }
 

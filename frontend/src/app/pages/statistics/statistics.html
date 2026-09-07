@@ -1,269 +1,1151 @@
 <div class="statistics-page">
 
+  <!-- ====================================================== -->
   <!-- HEADER -->
+  <!-- ====================================================== -->
 
-  <header class="header">
+  <div class="page-header">
 
-    <a routerLink="/" class="logo">
-      BELA
-    </a>
-
-    <a routerLink="/" class="back-button">
-      ← Početna
-    </a>
-
-  </header>
-
-
-  <!-- SADRŽAJ -->
-
-  <main class="content">
-
-    <div class="page-title">
-
-      <h1>📊 Statistika</h1>
+    <div>
+      <h1>Statistika</h1>
 
       <p>
-        Pregled svih odigranih igara
+        Pregled rezultata i uspjeha igrača u Beli.
       </p>
+    </div>
+
+  </div>
+
+
+  @if (loading) {
+
+    <div class="loading">
+
+      Učitavanje statistike...
+
+    </div>
+
+  } @else {
+
+
+    <!-- ================================================== -->
+    <!-- GLOBALNI PREGLED -->
+    <!-- ================================================== -->
+
+    <div class="section-title">
+
+      <h2>Pregled igre</h2>
 
     </div>
 
 
-    @if (loading) {
+    <div class="summary-grid">
 
-      <div class="loading">
-        Učitavanje statistike...
+
+      <div class="summary-card">
+
+        <div class="summary-icon">
+          🎮
+        </div>
+
+        <div>
+
+          <span>
+            Ukupno igara
+          </span>
+
+          <strong>
+            {{ summary.totalGames }}
+          </strong>
+
+        </div>
+
       </div>
 
-    } @else {
 
+      <div class="summary-card">
 
-      <!-- SAŽETAK -->
+        <div class="summary-icon">
+          🃏
+        </div>
 
-      <section class="summary">
+        <div>
 
-        <div class="summary-card">
+          <span>
+            Ukupno partija
+          </span>
 
-          <div class="summary-icon">
-            🎮
-          </div>
-
-          <div>
-
-            <span class="summary-value">
-              {{ totalGames }}
-            </span>
-
-            <span class="summary-label">
-              IGARA
-            </span>
-
-          </div>
+          <strong>
+            {{ summary.totalParties }}
+          </strong>
 
         </div>
 
+      </div>
 
-        <div class="summary-card">
 
-          <div class="summary-icon">
-            🏆
-          </div>
+      <div class="summary-card">
 
-          <div>
+        <div class="summary-icon">
+          🔄
+        </div>
 
-            <span class="summary-value">
-              {{ totalParties }}
-            </span>
+        <div>
 
-            <span class="summary-label">
-              PARTIJA
-            </span>
+          <span>
+            Ukupno rundi
+          </span>
 
-          </div>
+          <strong>
+            {{ summary.totalRounds }}
+          </strong>
 
         </div>
 
+      </div>
 
-        <div class="summary-card">
 
-          <div class="summary-icon">
-            🎴
-          </div>
+    </div>
 
-          <div>
 
-            <span class="summary-value">
-              {{ totalRounds }}
-            </span>
+    <!-- ================================================== -->
+    <!-- NAČINI IGRE -->
+    <!-- ================================================== -->
 
-            <span class="summary-label">
-              RUNDI
-            </span>
+    <div class="mode-summary">
 
-          </div>
+
+      <div class="mode-summary-card">
+
+        <div class="mode-number">
+          2
+        </div>
+
+        <div>
+
+          <strong>
+            2 igrača
+          </strong>
+
+          <span>
+            {{ summary.games2Players }} igara
+          </span>
 
         </div>
 
-      </section>
+      </div>
 
 
-      <!-- RANG LISTA -->
+      <div class="mode-summary-card">
 
-      <section class="section">
+        <div class="mode-number">
+          3
+        </div>
 
-        <div class="section-header">
+        <div>
 
-          <h2>
-            🏆 Rang-lista igrača
-          </h2>
+          <strong>
+            3 igrača
+          </strong>
 
-          <p>
-            Najuspješniji igrači prema postotku pobjeda
-          </p>
+          <span>
+            {{ summary.games3Players }} igara
+          </span>
 
         </div>
 
+      </div>
 
-        <div class="ranking">
 
-          @for (player of players; track player.id; let i = $index) {
+      <div class="mode-summary-card">
 
-            <div class="ranking-row">
+        <div class="mode-number">
+          4
+        </div>
 
-              <span class="ranking-position">
-                {{ i + 1 }}
-              </span>
+        <div>
 
-              <span class="ranking-player">
-                {{ player.username }}
-              </span>
+          <strong>
+            4 igrača
+          </strong>
 
-              <span class="ranking-games">
-                {{ player.gamesPlayed }}
-                {{ player.gamesPlayed === 1 ? 'igra' : 'igara' }}
-              </span>
+          <span>
+            {{ summary.games4Players }} igara
+          </span>
 
-              <span class="ranking-wins">
-                {{ player.gamesWon }}
-                {{ player.gamesWon === 1 ? 'pobjeda' : 'pobjeda' }}
-              </span>
+        </div>
 
-              <strong class="ranking-rate">
-                {{ player.winRate }}%
-              </strong>
+      </div>
 
-            </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- PRETRAGA -->
+    <!-- ================================================== -->
+
+    <div class="section-title">
+
+      <h2>Statistika igrača</h2>
+
+    </div>
+
+
+    <div class="player-search">
+
+      <div class="search-box">
+
+        <span class="search-icon">
+          🔎
+        </span>
+
+        <input
+          type="text"
+          placeholder="Pretraži igrača..."
+          [(ngModel)]="searchText"
+          (input)="searchPlayers()"
+        />
+
+        @if (searchText) {
+
+          <button
+            class="clear-search"
+            type="button"
+            (click)="clearSelectedPlayer()"
+          >
+            ×
+          </button>
+
+        }
+
+      </div>
+
+
+      @if (
+        searchText &&
+        !selectedPlayer &&
+        filteredPlayers.length > 0
+      ) {
+
+        <div class="search-results">
+
+          @for (
+            player of filteredPlayers;
+            track player.id
+          ) {
+
+            <button
+              class="player-result"
+              type="button"
+              (click)="selectPlayer(player)"
+            >
+
+              <div class="player-avatar">
+                {{ player.username.charAt(0).toUpperCase() }}
+              </div>
+
+              <div>
+
+                <strong>
+                  {{ player.username }}
+                </strong>
+
+                <span>
+                  {{ player.overall.gamesPlayed }}
+                  {{ player.overall.gamesPlayed === 1 ? 'igra' : 'igara' }}
+                </span>
+
+              </div>
+
+            </button>
 
           }
 
         </div>
 
-      </section>
+      }
 
 
-      <!-- DETALJNA STATISTIKA -->
+      @if (
+        searchText &&
+        !selectedPlayer &&
+        filteredPlayers.length === 0
+      ) {
 
-      <section class="section">
+        <div class="no-results">
 
-        <div class="section-header">
+          Nema igrača koji odgovara pretrazi.
 
-          <h2>
-            📈 Detaljna statistika
-          </h2>
+        </div>
 
-          <p>
-            Statistika igrača kroz sve odigrane igre
-          </p>
+      }
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- ODABRANI IGRAČ -->
+    <!-- ================================================== -->
+
+    @if (selectedPlayer) {
+
+
+      <div class="selected-player">
+
+
+        <!-- PLAYER HEADER -->
+
+        <div class="selected-player-header">
+
+          <div class="big-avatar">
+
+            {{ selectedPlayer.username
+              .charAt(0)
+              .toUpperCase()
+            }}
+
+          </div>
+
+
+          <div class="player-info">
+
+            <span>
+              Statistika igrača
+            </span>
+
+            <h2>
+              {{ selectedPlayer.username }}
+            </h2>
+
+          </div>
+
+
+          <button
+            class="change-player"
+            type="button"
+            (click)="clearSelectedPlayer()"
+          >
+            Promijeni igrača
+          </button>
 
         </div>
 
 
-        <div class="table-container">
+        <!-- ================================================== -->
+        <!-- UKUPNA STATISTIKA -->
+        <!-- ================================================== -->
 
-          <table>
+        <div class="stats-section">
 
-            <thead>
+          <div class="stats-section-header">
 
-              <tr>
+            <div>
 
-                <th>Igrač</th>
-                <th>Igre</th>
-                <th>Pobjede</th>
-                <th>Porazi</th>
-                <th>Win rate</th>
-                <th>Bodovi</th>
-                <th>Runde</th>
-                <th>Zvanja</th>
-                <th>Padovi</th>
-                <th>Štiglije</th>
+              <h3>
+                Ukupna statistika
+              </h3>
 
-              </tr>
+              <span>
+                Svi načini igre
+              </span>
 
-            </thead>
+            </div>
+
+          </div>
 
 
-            <tbody>
+          <div class="stats-grid">
 
-              @for (player of players; track player.id) {
 
-                <tr>
+            <div class="stat-card">
 
-                  <td class="player-name">
-                    {{ player.username }}
-                  </td>
+              <span>
+                Igre
+              </span>
 
-                  <td>
-                    {{ player.gamesPlayed }}
-                  </td>
+              <strong>
+                {{ selectedPlayer.overall.gamesPlayed }}
+              </strong>
 
-                  <td>
-                    {{ player.gamesWon }}
-                  </td>
+            </div>
 
-                  <td>
-                    {{ player.gamesLost }}
-                  </td>
 
-                  <td class="win-rate">
-                    {{ player.winRate }}%
-                  </td>
+            <div class="stat-card success">
 
-                  <td>
-                    {{ player.totalPoints }}
-                  </td>
+              <span>
+                Pobjede
+              </span>
 
-                  <td>
-                    {{ player.roundsPlayed }}
-                  </td>
+              <strong>
+                {{ selectedPlayer.overall.gamesWon }}
+              </strong>
 
-                  <td>
-                    {{ player.bids }}
-                  </td>
+            </div>
 
-                  <td>
-                    {{ player.failedCalls }}
-                  </td>
 
-                  <td>
-                    {{ player.stiglje }}
-                  </td>
+            <div class="stat-card danger">
 
-                </tr>
+              <span>
+                Porazi
+              </span>
 
-              }
+              <strong>
+                {{ selectedPlayer.overall.gamesLost }}
+              </strong>
 
-            </tbody>
+            </div>
 
-          </table>
+
+            <div class="stat-card highlight">
+
+              <span>
+                Postotak pobjeda
+              </span>
+
+              <strong>
+                {{ selectedPlayer.overall.winRate }}%
+              </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+              <span>
+                Partije
+              </span>
+
+              <strong>
+                {{ selectedPlayer.overall.partiesPlayed }}
+              </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+              <span>
+                Dobivene partije
+              </span>
+
+              <strong>
+                {{ selectedPlayer.overall.partiesWon }}
+              </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+              <span>
+                Runde
+              </span>
+
+              <strong>
+                {{ selectedPlayer.overall.roundsPlayed }}
+              </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+              <span>
+                Ukupno bodova
+              </span>
+
+              <strong>
+                {{ selectedPlayer.overall.totalPoints }}
+              </strong>
+
+            </div>
+
+
+          </div>
 
         </div>
 
-      </section>
 
+        <!-- ================================================== -->
+        <!-- 2 IGRAČA -->
+        <!-- ================================================== -->
+
+        <div class="mode-section">
+
+          <div class="mode-header">
+
+            <div class="mode-badge">
+              2
+            </div>
+
+            <div>
+
+              <h3>
+                Igra s 2 igrača
+              </h3>
+
+              <span>
+                Statistika samo iz igara za 2 igrača
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="mode-stats-grid">
+
+            <div class="mode-stat">
+
+              <span>
+                Igre
+              </span>
+
+              <strong>
+                {{ selectedPlayer.twoPlayers.gamesPlayed }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Pobjede
+              </span>
+
+              <strong>
+                {{ selectedPlayer.twoPlayers.gamesWon }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Porazi
+              </span>
+
+              <strong>
+                {{ selectedPlayer.twoPlayers.gamesLost }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Win rate
+              </span>
+
+              <strong>
+                {{ selectedPlayer.twoPlayers.winRate }}%
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Partije
+              </span>
+
+              <strong>
+                {{ selectedPlayer.twoPlayers.partiesPlayed }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Runde
+              </span>
+
+              <strong>
+                {{ selectedPlayer.twoPlayers.roundsPlayed }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Bodovi
+              </span>
+
+              <strong>
+                {{ selectedPlayer.twoPlayers.totalPoints }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Zvanja
+              </span>
+
+              <strong>
+                {{ selectedPlayer.twoPlayers.bids }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Bodovi zvanja
+              </span>
+
+              <strong>
+                {{ selectedPlayer.twoPlayers.bidPoints }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Pozivi
+              </span>
+
+              <strong>
+                {{ selectedPlayer.twoPlayers.calls }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Uspješni pozivi
+              </span>
+
+              <strong>
+                {{ selectedPlayer.twoPlayers.successfulCalls }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Stiglje
+              </span>
+
+              <strong>
+                {{ selectedPlayer.twoPlayers.stiglje }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- 3 IGRAČA -->
+        <!-- ================================================== -->
+
+        <div class="mode-section">
+
+          <div class="mode-header">
+
+            <div class="mode-badge">
+              3
+            </div>
+
+            <div>
+
+              <h3>
+                Igra s 3 igrača
+              </h3>
+
+              <span>
+                Statistika samo iz igara za 3 igrača
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="mode-stats-grid">
+
+            <div class="mode-stat">
+
+              <span>
+                Igre
+              </span>
+
+              <strong>
+                {{ selectedPlayer.threePlayers.gamesPlayed }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Pobjede
+              </span>
+
+              <strong>
+                {{ selectedPlayer.threePlayers.gamesWon }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Porazi
+              </span>
+
+              <strong>
+                {{ selectedPlayer.threePlayers.gamesLost }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Win rate
+              </span>
+
+              <strong>
+                {{ selectedPlayer.threePlayers.winRate }}%
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Partije
+              </span>
+
+              <strong>
+                {{ selectedPlayer.threePlayers.partiesPlayed }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Runde
+              </span>
+
+              <strong>
+                {{ selectedPlayer.threePlayers.roundsPlayed }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Bodovi
+              </span>
+
+              <strong>
+                {{ selectedPlayer.threePlayers.totalPoints }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Zvanja
+              </span>
+
+              <strong>
+                {{ selectedPlayer.threePlayers.bids }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Bodovi zvanja
+              </span>
+
+              <strong>
+                {{ selectedPlayer.threePlayers.bidPoints }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Pozivi
+              </span>
+
+              <strong>
+                {{ selectedPlayer.threePlayers.calls }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Uspješni pozivi
+              </span>
+
+              <strong>
+                {{ selectedPlayer.threePlayers.successfulCalls }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Stiglje
+              </span>
+
+              <strong>
+                {{ selectedPlayer.threePlayers.stiglje }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- 4 IGRAČA -->
+        <!-- ================================================== -->
+
+        <div class="mode-section">
+
+          <div class="mode-header">
+
+            <div class="mode-badge">
+              4
+            </div>
+
+            <div>
+
+              <h3>
+                Igra s 4 igrača
+              </h3>
+
+              <span>
+                Statistika samo iz igara za 4 igrača
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="mode-stats-grid">
+
+            <div class="mode-stat">
+
+              <span>
+                Igre
+              </span>
+
+              <strong>
+                {{ selectedPlayer.fourPlayers.gamesPlayed }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Pobjede
+              </span>
+
+              <strong>
+                {{ selectedPlayer.fourPlayers.gamesWon }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Porazi
+              </span>
+
+              <strong>
+                {{ selectedPlayer.fourPlayers.gamesLost }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Win rate
+              </span>
+
+              <strong>
+                {{ selectedPlayer.fourPlayers.winRate }}%
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Partije
+              </span>
+
+              <strong>
+                {{ selectedPlayer.fourPlayers.partiesPlayed }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Runde
+              </span>
+
+              <strong>
+                {{ selectedPlayer.fourPlayers.roundsPlayed }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Bodovi
+              </span>
+
+              <strong>
+                {{ selectedPlayer.fourPlayers.totalPoints }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Zvanja
+              </span>
+
+              <strong>
+                {{ selectedPlayer.fourPlayers.bids }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Bodovi zvanja
+              </span>
+
+              <strong>
+                {{ selectedPlayer.fourPlayers.bidPoints }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Pozivi
+              </span>
+
+              <strong>
+                {{ selectedPlayer.fourPlayers.calls }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Uspješni pozivi
+              </span>
+
+              <strong>
+                {{ selectedPlayer.fourPlayers.successfulCalls }}
+              </strong>
+
+            </div>
+
+
+            <div class="mode-stat">
+
+              <span>
+                Stiglje
+              </span>
+
+              <strong>
+                {{ selectedPlayer.fourPlayers.stiglje }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+      </div>
 
     }
 
-  </main>
+
+    <!-- ====================================================== -->
+    <!-- SVI IGRAČI -->
+    <!-- ====================================================== -->
+
+    @if (!selectedPlayer) {
+
+      <div class="all-players">
+
+        <div class="section-title">
+
+          <h2>
+            Svi igrači
+          </h2>
+
+        </div>
+
+
+        <div class="players-list">
+
+          @for (
+            player of players;
+            track player.id
+          ) {
+
+            <button
+              class="player-row"
+              type="button"
+              (click)="selectPlayer(player)"
+            >
+
+              <div class="player-avatar">
+
+                {{ player.username
+                  .charAt(0)
+                  .toUpperCase()
+                }}
+
+              </div>
+
+
+              <div class="player-name">
+
+                <strong>
+                  {{ player.username }}
+                </strong>
+
+                <span>
+                  {{ player.overall.gamesPlayed }}
+                  igara
+                </span>
+
+              </div>
+
+
+              <div class="player-stat">
+
+                <span>
+                  Pobjede
+                </span>
+
+                <strong>
+                  {{ player.overall.gamesWon }}
+                </strong>
+
+              </div>
+
+
+              <div class="player-stat">
+
+                <span>
+                  Win rate
+                </span>
+
+                <strong>
+                  {{ player.overall.winRate }}%
+                </strong>
+
+              </div>
+
+
+              <div class="player-stat">
+
+                <span>
+                  Bodovi
+                </span>
+
+                <strong>
+                  {{ player.overall.totalPoints }}
+                </strong>
+
+              </div>
+
+
+              <div class="arrow">
+                →
+              </div>
+
+            </button>
+
+          }
+
+        </div>
+
+      </div>
+
+    }
+
+  }
 
 </div>

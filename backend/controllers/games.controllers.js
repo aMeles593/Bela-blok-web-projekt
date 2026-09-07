@@ -10,37 +10,114 @@ const saveGame = async (req, res) => {
       parties
     } = req.body;
 
-    if (!targetScore || !players || players.length !== 4 || !parties) {
+    // -------------------------------------------------
+    // VALIDACIJA
+    // -------------------------------------------------
+
+    if (
+      !targetScore ||
+      !players ||
+      ![2, 3, 4].includes(players.length) ||
+      !Array.isArray(parties)
+    ) {
       return res.status(400).json({
         message: 'Neispravni podaci igre.'
       });
     }
 
+    const playerCount = players.length;
+
+    // -------------------------------------------------
+    // PROVJERA BROJA IGRAČA I EKIPA
+    // -------------------------------------------------
+
+    if (playerCount === 2) {
+
+      for (const player of players) {
+        if (![1, 2].includes(player.team)) {
+          return res.status(400).json({
+            message: 'Neispravne ekipe za igru s 2 igrača.'
+          });
+        }
+      }
+
+    } else if (playerCount === 3) {
+
+      for (const player of players) {
+        if (![1, 2, 3].includes(player.team)) {
+          return res.status(400).json({
+            message: 'Neispravne ekipe za igru s 3 igrača.'
+          });
+        }
+      }
+
+    } else {
+
+      for (const player of players) {
+        if (![1, 2].includes(player.team)) {
+          return res.status(400).json({
+            message: 'Neispravne ekipe za igru s 4 igrača.'
+          });
+        }
+      }
+
+    }
+
     await client.query('BEGIN');
 
-    // 1. Spremi igru
+    // -------------------------------------------------
+    // 1. SPREMI IGRU
+    // -------------------------------------------------
+
+    const team1Wins = parties.filter(
+      p => p.winningTeam === 1
+    ).length;
+
+    const team2Wins = parties.filter(
+      p => p.winningTeam === 2
+    ).length;
+
+    const team3Wins = parties.filter(
+      p => p.winningTeam === 3
+    ).length;
+
     const gameResult = await client.query(
       `
       INSERT INTO games (
         target_score,
+        player_count,
         team1_party_wins,
         team2_party_wins,
+        team3_party_wins,
         finished_at
       )
-      VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+      VALUES (
+        $1,
+        $2,
+        $3,
+        $4,
+        $5,
+        CURRENT_TIMESTAMP
+      )
       RETURNING id
       `,
       [
         targetScore,
-        parties.filter(p => p.winningTeam === 1).length,
-        parties.filter(p => p.winningTeam === 2).length
+        playerCount,
+        team1Wins,
+        team2Wins,
+        team3Wins
       ]
     );
 
     const gameId = gameResult.rows[0].id;
 
-    // 2. Spremi igrače
+    // -------------------------------------------------
+    // 2. SPREMI IGRAČE
+    // -------------------------------------------------
+
     for (const player of players) {
+
       await client.query(
         `
         INSERT INTO game_players (
@@ -56,9 +133,13 @@ const saveGame = async (req, res) => {
           player.team
         ]
       );
+
     }
 
-    // 3. Spremi partije
+    // -------------------------------------------------
+    // 3. SPREMI PARTIJE
+    // -------------------------------------------------
+
     for (const party of parties) {
 
       const partyResult = await client.query(
@@ -68,12 +149,18 @@ const saveGame = async (req, res) => {
           party_number,
           team1_score,
           team2_score,
+          team3_score,
           winning_team,
           started_at,
           finished_at
         )
         VALUES (
-          $1, $2, $3, $4, $5,
+          $1,
+          $2,
+          $3,
+          $4,
+          $5,
+          $6,
           CURRENT_TIMESTAMP,
           CURRENT_TIMESTAMP
         )
@@ -82,16 +169,20 @@ const saveGame = async (req, res) => {
         [
           gameId,
           party.partyNumber,
-          party.team1Score,
-          party.team2Score,
+          party.team1Score ?? 0,
+          party.team2Score ?? 0,
+          party.team3Score ?? 0,
           party.winningTeam
         ]
       );
 
       const partyId = partyResult.rows[0].id;
 
-      // 4. Spremi runde
-      for (const round of party.rounds) {
+      // -------------------------------------------------
+      // 4. SPREMI RUNDE
+      // -------------------------------------------------
+
+      for (const round of party.rounds || []) {
 
         const roundResult = await client.query(
           `
@@ -100,43 +191,81 @@ const saveGame = async (req, res) => {
             round_number,
             caller_user_id,
             trump,
+
             team1_points,
             team2_points,
+            team3_points,
+
             team1_bids,
             team2_bids,
+            team3_bids,
+
             team1_total,
             team2_total,
+            team3_total,
+
             failed,
             stiglja,
             stiglja_team
           )
           VALUES (
-            $1, $2, $3, $4, $5, $6,
-            $7, $8, $9, $10, $11, $12, $13
+            $1,
+            $2,
+            $3,
+            $4,
+
+            $5,
+            $6,
+            $7,
+
+            $8,
+            $9,
+            $10,
+
+            $11,
+            $12,
+            $13,
+
+            $14,
+            $15,
+            $16
           )
           RETURNING id
           `,
           [
             partyId,
             round.number,
-            round.callerId,
+            round.callerId ?? null,
             round.trump,
-            round.team1Points,
-            round.team2Points,
-            round.team1Bids,
-            round.team2Bids,
-            round.team1Total,
-            round.team2Total,
-            round.failed,
-            round.stiglja,
-            round.stigljaTeam
+
+            round.team1Points ?? 0,
+            round.team2Points ?? 0,
+            round.team3Points ?? 0,
+
+            round.team1Bids ?? 0,
+            round.team2Bids ?? 0,
+            round.team3Bids ?? 0,
+
+            round.team1Total ?? 0,
+            round.team2Total ?? 0,
+            round.team3Total ?? 0,
+
+            round.failed ?? false,
+            round.stiglja ?? false,
+            round.stigljaTeam ?? null
           ]
         );
 
         const roundId = roundResult.rows[0].id;
 
-        // 5. Spremi zvanja
-        if (round.bids && round.bids.length > 0) {
+        // -------------------------------------------------
+        // 5. SPREMI ZVANJA
+        // -------------------------------------------------
+
+        if (
+          Array.isArray(round.bids) &&
+          round.bids.length > 0
+        ) {
 
           for (const bid of round.bids) {
 
@@ -155,9 +284,13 @@ const saveGame = async (req, res) => {
                 bid.points
               ]
             );
+
           }
+
         }
+
       }
+
     }
 
     await client.query('COMMIT');
@@ -171,27 +304,42 @@ const saveGame = async (req, res) => {
 
     await client.query('ROLLBACK');
 
-    console.error('Greška kod spremanja igre:', error);
+    console.error(
+      'Greška kod spremanja igre:',
+      error
+    );
 
     res.status(500).json({
       message: 'Greška kod spremanja igre.'
     });
 
   } finally {
+
     client.release();
+
   }
 };
 
+
+// =====================================================
+// DOHVAT SVIH IGARA
+// =====================================================
+
 const getGames = async (req, res) => {
+
   try {
+
     const result = await pool.query(`
       SELECT
         g.id,
         g.target_score,
+        g.player_count,
         g.started_at,
         g.finished_at,
+
         g.team1_party_wins,
         g.team2_party_wins,
+        g.team3_party_wins,
 
         COUNT(DISTINCT p.id) AS party_count,
 
@@ -214,10 +362,12 @@ const getGames = async (req, res) => {
       GROUP BY
         g.id,
         g.target_score,
+        g.player_count,
         g.started_at,
         g.finished_at,
         g.team1_party_wins,
-        g.team2_party_wins
+        g.team2_party_wins,
+        g.team3_party_wins
 
       ORDER BY g.id DESC
     `);
@@ -234,8 +384,11 @@ const getGames = async (req, res) => {
     res.status(500).json({
       message: 'Greška kod dohvaćanja igara.'
     });
+
   }
+
 };
+
 
 module.exports = {
   saveGame,

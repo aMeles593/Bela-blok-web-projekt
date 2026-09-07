@@ -2,9 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface PlayerStatistics {
-  id: number;
-  username: string;
+
+export interface ModeStatistics {
 
   gamesPlayed: number;
   gamesWon: number;
@@ -28,6 +27,47 @@ export interface PlayerStatistics {
   stiglje: number;
 }
 
+
+export interface PlayerStatistics {
+
+  id: number;
+
+  username: string;
+
+  overall: ModeStatistics;
+
+  twoPlayers: ModeStatistics;
+
+  threePlayers: ModeStatistics;
+
+  fourPlayers: ModeStatistics;
+}
+
+
+export interface StatisticsSummary {
+
+  totalGames: number;
+
+  totalParties: number;
+
+  totalRounds: number;
+
+  games2Players: number;
+
+  games3Players: number;
+
+  games4Players: number;
+}
+
+
+export interface StatisticsResponse {
+
+  summary: StatisticsSummary;
+
+  players: PlayerStatistics[];
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,11 +75,13 @@ export class StatisticsService {
 
   private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:3000/api/statistics';
+  private apiUrl =
+    'http://localhost:3000/api/statistics';
 
-  getStatistics(): Observable<PlayerStatistics[]> {
 
-    return this.http.get<PlayerStatistics[]>(
+  getStatistics(): Observable<StatisticsResponse> {
+
+    return this.http.get<StatisticsResponse>(
       this.apiUrl
     );
 

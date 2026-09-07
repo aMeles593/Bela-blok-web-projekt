@@ -10,45 +10,37 @@
   </section>
 
 
-  <!-- REZULTAT PARTIJA -->
   <div class="parties-scoreboard">
 
-    <div class="parties-scoreboard-header">
-      <span class="parties-label">PARTIJE</span>
-      <span class="current-party">
-        Partija {{ partyNumber }}
-      </span>
-    </div>
+  <div class="parties-scoreboard-header">
+    <span class="parties-label">PARTIJE</span>
 
-    <div class="parties-score">
+    <span class="current-party">
+      Partija {{ partyNumber }}
+    </span>
+  </div>
 
-      <div class="party-team">
-        <span class="party-team-name">
-          {{ getPlayerName(0) }}
+  <div class="parties-score-players">
+
+    @for (player of players; track player.id) {
+
+      <div class="party-player">
+
+        <span class="party-player-name">
+          {{ player.username }}
         </span>
 
         <span class="party-wins">
-          {{ partyWins[0] }}
-        </span>
-      </div>
-
-      <div class="party-separator">
-        :
-      </div>
-
-      <div class="party-team">
-        <span class="party-wins">
-          {{ partyWins[1] }}
+          {{ partyWins[$index] || 0 }}
         </span>
 
-        <span class="party-team-name">
-          {{ getPlayerName(1) }}
-        </span>
       </div>
 
-    </div>
+    }
 
   </div>
+
+</div>
 
 
   <!-- TRENUTNA PARTIJA -->
@@ -82,33 +74,6 @@
     </div>
 
   </section>
-
-
-  <!-- REZULTAT PARTIJA -->
-  <section class="games-score">
-
-    <h3>Partije</h3>
-
-    <div class="games-score-value">
-
-      <div class="games-team">
-        <span>{{ getPlayerName(0) }}</span>
-        <strong>{{ partyWins[0] }}</strong>
-      </div>
-
-      <div class="games-separator">
-        :
-      </div>
-
-      <div class="games-team">
-        <strong>{{ partyWins[1] }}</strong>
-        <span>{{ getPlayerName(1) }}</span>
-      </div>
-
-    </div>
-
-  </section>
-
 
   <!-- ZAVRŠENA PARTIJA -->
   @if (partyFinished) {

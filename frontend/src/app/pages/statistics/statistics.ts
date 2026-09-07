@@ -1,63 +1,219 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { StatisticsService, PlayerStatistics } from '../../services/statistics';
+import {
+  Component,
+  inject,
+  ChangeDetectorRef
+} from '@angular/core';
+
+import {
+  FormsModule
+} from '@angular/forms';
+
+import {
+  StatisticsService,
+  PlayerStatistics,
+  StatisticsSummary,
+  ModeStatistics
+} from '../../services/statistics';
+
 
 @Component({
   selector: 'app-statistics',
+
   standalone: true,
-  imports: [RouterLink],
+
+  imports: [
+    FormsModule
+  ],
+
   templateUrl: './statistics.html',
+
   styleUrl: './statistics.scss'
 })
 export class Statistics {
 
-  private statisticsService = inject(StatisticsService);
-  private cdr = inject(ChangeDetectorRef);
+  private statisticsService =
+    inject(StatisticsService);
+
+  private cdr =
+    inject(ChangeDetectorRef);
+
 
   players: PlayerStatistics[] = [];
 
+  filteredPlayers: PlayerStatistics[] = [];
+
+  selectedPlayer:
+    PlayerStatistics | null = null;
+
+
+  searchText = '';
+
   loading = true;
 
-  totalGames = 0;
-  totalParties = 0;
-  totalRounds = 0;
+
+  summary: StatisticsSummary = {
+
+    totalGames: 0,
+
+    totalParties: 0,
+
+    totalRounds: 0,
+
+    games2Players: 0,
+
+    games3Players: 0,
+
+    games4Players: 0
+  };
+
 
   ngOnInit() {
 
-    this.statisticsService.getStatistics().subscribe({
+    this.loadStatistics();
 
-      next: (statistics) => {
+  }
 
-        console.log('STATISTIKA:', statistics);
 
-        this.players = statistics;
+  loadStatistics() {
 
-        if (this.players.length > 0) {
+    this.loading = true;
 
-          this.totalGames = this.players[0].gamesPlayed;
+    this.statisticsService
+      .getStatistics()
+      .subscribe({
 
-          this.totalParties = this.players[0].partiesPlayed;
+        next: (response: any) => {
 
-          this.totalRounds = this.players[0].roundsPlayed;
+          console.log('STATISTIKA RAW:', response);
+          console.log('PLAYERS:', response?.players);
+          console.log(
+            'JE LI PLAYERS ARRAY:',
+            Array.isArray(response?.players)
+          );
+
+          // Backend bi trebao vratiti:
+          // {
+          //   summary: {...},
+          //   players: [...]
+          // }
+
+          if (Array.isArray(response?.players)) {
+
+            this.players = response.players;
+
+          } else {
+
+            console.error(
+              'GREŠKA: response.players nije niz!',
+              response?.players
+            );
+
+            this.players = [];
+
+          }
+
+          this.filteredPlayers = [...this.players];
+
+          if (response?.summary) {
+
+            this.summary = response.summary;
+
+          }
+
+          this.loading = false;
+
+          this.cdr.detectChanges();
+
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Greška kod dohvaćanja statistike:',
+            error
+          );
+
+          this.players = [];
+          this.filteredPlayers = [];
+
+          this.loading = false;
+
+          this.cdr.detectChanges();
 
         }
 
-        this.loading = false;
+      });
 
-        this.cdr.detectChanges();
-      },
+  }
 
-      error: (error) => {
 
-        console.error(
-          'Greška kod dohvaćanja statistike:',
-          error
-        );
 
-        this.loading = false;
-      }
 
-    });
+  searchPlayers() {
+
+    const search =
+      this.searchText
+        .trim()
+        .toLowerCase();
+
+
+    if (!search) {
+
+      this.filteredPlayers =
+        this.players;
+
+      return;
+
+    }
+
+
+    this.filteredPlayers =
+      this.players.filter(player =>
+
+        player.username
+          .toLowerCase()
+          .includes(search)
+
+      );
+
+  }
+
+
+  selectPlayer(
+    player: PlayerStatistics
+  ) {
+
+    this.selectedPlayer =
+      player;
+
+    this.searchText =
+      player.username;
+
+    this.filteredPlayers =
+      [];
+
+  }
+
+
+  clearSelectedPlayer() {
+
+    this.selectedPlayer =
+      null;
+
+    this.searchText =
+      '';
+
+    this.filteredPlayers =
+      this.players;
+
+  }
+
+
+  getWinRate(
+    stats: ModeStatistics
+  ): string {
+
+    return `${stats.winRate}%`;
 
   }
 
