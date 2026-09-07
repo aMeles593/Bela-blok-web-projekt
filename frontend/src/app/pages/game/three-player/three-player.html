@@ -1,0 +1,885 @@
+<div class="three-player-game">
+
+  <!-- CILJ IGRE -->
+  <section class="game-info">
+    <div class="game-target">
+      <span>Igra se do</span>
+      <strong>{{ targetScore }}</strong>
+      <span>bodova</span>
+    </div>
+  </section>
+
+
+  <!-- REZULTAT PARTIJA -->
+  <div class="parties-scoreboard">
+
+    <div class="parties-scoreboard-header">
+      <span class="parties-label">PARTIJE</span>
+      <span class="current-party">
+        Partija {{ partyNumber }}
+      </span>
+    </div>
+
+    <div class="parties-score">
+
+      <div class="party-team">
+        <span class="party-team-name">
+          {{ getPlayerName(0) }}
+        </span>
+
+        <span class="party-wins">
+          {{ partyWins[0] }}
+        </span>
+      </div>
+
+      <div class="party-separator">
+        :
+      </div>
+
+      <div class="party-team">
+        <span class="party-wins">
+          {{ partyWins[1] }}
+        </span>
+
+        <span class="party-team-name">
+          {{ getPlayerName(1) }}
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- TRENUTNA PARTIJA -->
+  <section class="scoreboard">
+
+    <h2>Trenutna partija</h2>
+
+    <div class="scoreboard-players">
+
+      @for (player of players; track player.id) {
+
+        <div
+          class="scoreboard-player"
+          [class.winner]="
+            partyFinished && winnerPlayer === $index
+          "
+        >
+
+          <span class="scoreboard-player-name">
+            {{ player.username }}
+          </span>
+
+          <strong class="score">
+            {{ scores[$index] }}
+          </strong>
+
+        </div>
+
+      }
+
+    </div>
+
+  </section>
+
+
+  <!-- REZULTAT PARTIJA -->
+  <section class="games-score">
+
+    <h3>Partije</h3>
+
+    <div class="games-score-value">
+
+      <div class="games-team">
+        <span>{{ getPlayerName(0) }}</span>
+        <strong>{{ partyWins[0] }}</strong>
+      </div>
+
+      <div class="games-separator">
+        :
+      </div>
+
+      <div class="games-team">
+        <strong>{{ partyWins[1] }}</strong>
+        <span>{{ getPlayerName(1) }}</span>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ZAVRŠENA PARTIJA -->
+  @if (partyFinished) {
+
+    <section class="game-finished">
+
+      <div class="game-actions">
+
+        <button
+          type="button"
+          class="new-game-button"
+          (click)="startNewParty()"
+        >
+          <span>↻</span>
+          Nova partija
+        </button>
+
+        <button
+          type="button"
+          class="finish-game-button"
+          (click)="finishAllGames()"
+        >
+          <span>✓</span>
+          Završi igru
+        </button>
+
+      </div>
+
+    </section>
+
+  }
+
+
+  <!-- RUNDE -->
+  <section class="rounds-section">
+
+    <div class="rounds-header">
+
+      <h2>Runde</h2>
+
+      <button
+        class="new-round-button"
+        (click)="openNewRound()"
+        [disabled]="currentRound !== null || partyFinished"
+      >
+        + NOVA RUNDA
+      </button>
+
+    </div>
+
+
+    <!-- NEMA RUNDI -->
+    @if (
+      rounds.length === 0 &&
+      currentRound === null &&
+      !partyFinished
+    ) {
+
+      <div class="empty-rounds">
+
+        <p>Još nema odigranih rundi.</p>
+
+        <button
+          class="new-round-button"
+          (click)="openNewRound()"
+          [disabled]="partyFinished"
+        >
+          ZAPOČNI PRVU RUNDU
+        </button>
+
+      </div>
+
+    }
+
+
+    <!-- TRENUTNA RUNDA -->
+    @if (currentRound) {
+
+      <div class="round-form">
+
+        <h3>
+          Runda {{ currentRound.number }}
+        </h3>
+
+
+        <!-- TKO JE ZVAO -->
+        <div class="form-group">
+
+          <label>Tko je zvao?</label>
+
+          <select
+            [(ngModel)]="currentRound.caller"
+            (ngModelChange)="calculateCurrentRound()"
+          >
+
+            <option value="">
+              Odaberite igrača
+            </option>
+
+            @for (player of players; track player.id) {
+
+              <option [value]="player.username">
+                {{ player.username }}
+              </option>
+
+            }
+
+          </select>
+
+        </div>
+
+
+        <!-- ADUT -->
+        <div class="form-group">
+
+          <label>Adut</label>
+
+          <select
+            [(ngModel)]="currentRound.trump"
+          >
+
+            <option value="">
+              Odaberite adut
+            </option>
+
+            <option value="Žir">Žir</option>
+            <option value="Srce">Srce</option>
+            <option value="Bundeva">Bundeva</option>
+            <option value="List">List</option>
+
+          </select>
+
+        </div>
+
+
+        <!-- ZVANJA -->
+        <div class="bids-section">
+
+          <div class="bids-header">
+
+            <h4>Zvanja</h4>
+
+            <button
+              type="button"
+              class="add-bid-button"
+              (click)="addBid()"
+            >
+              + DODAJ ZVANJE
+            </button>
+
+          </div>
+
+
+          @if (currentRound.bids.length === 0) {
+
+            <p class="no-bids">
+              Nema zvanja u ovoj rundi.
+            </p>
+
+          }
+
+
+          @for (
+            bid of currentRound.bids;
+            track $index
+          ) {
+
+            <div class="bid-row">
+
+              <div class="bid-player">
+
+                <label>Igrač</label>
+
+                <select
+                  [(ngModel)]="bid.player"
+                  (ngModelChange)="calculateBids()"
+                >
+
+                  <option value="">
+                    Odaberite igrača
+                  </option>
+
+                  @for (
+                    player of players;
+                    track player.id
+                  ) {
+
+                    <option [value]="player.username">
+                      {{ player.username }}
+                    </option>
+
+                  }
+
+                </select>
+
+              </div>
+
+
+              <div class="bid-points">
+
+                <label>Bodovi</label>
+
+                <input
+                  type="number"
+                  min="1"
+                  [(ngModel)]="bid.points"
+                  (ngModelChange)="calculateBids()"
+                />
+
+              </div>
+
+
+              <button
+                type="button"
+                class="remove-bid-button"
+                (click)="removeBid($index)"
+              >
+                ×
+              </button>
+
+            </div>
+
+          }
+
+
+          @if (currentRound.bids.length > 0) {
+
+            <div class="bid-summary">
+
+              <div>
+                <span>
+                  {{ getPlayerName(0) }}
+                </span>
+
+                <strong>
+                  {{ currentRound.player1Bids }}
+                </strong>
+              </div>
+
+              <div>
+                <span>
+                  {{ getPlayerName(1) }}
+                </span>
+
+                <strong>
+                  {{ currentRound.player2Bids }}
+                </strong>
+              </div>
+
+              <div>
+                <span>
+                  {{ getPlayerName(2) }}
+                </span>
+
+                <strong>
+                  {{ currentRound.player3Bids }}
+                </strong>
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+
+        <!-- BODOVI -->
+        <div class="points-section">
+
+          <h4>Bodovi iz igre</h4>
+
+          <p class="points-help">
+            Unesite bodove za svakog igrača zasebno.
+            Bodovi se ne izračunavaju automatski.
+          </p>
+
+
+          <div class="score-inputs">
+
+            <div class="score-input">
+
+              <label>
+                {{ getPlayerName(0) }}
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="currentRound.player1Points"
+                (ngModelChange)="updatePlayer1Points()"
+              />
+
+            </div>
+
+
+            <div class="score-input">
+
+              <label>
+                {{ getPlayerName(1) }}
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="currentRound.player2Points"
+                (ngModelChange)="updatePlayer2Points()"
+              />
+
+            </div>
+
+
+            <div class="score-input">
+
+              <label>
+                {{ getPlayerName(2) }}
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="currentRound.player3Points"
+                (ngModelChange)="updatePlayer3Points()"
+              />
+
+            </div>
+
+          </div>
+
+
+          <div class="points-total">
+
+            <span>Ukupno uneseno:</span>
+
+            <strong>
+              {{
+                (currentRound.player1Points || 0) +
+                (currentRound.player2Points || 0) +
+                (currentRound.player3Points || 0)
+              }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- ŠTIGLJA -->
+        <div class="stiglija-section">
+
+          <h4>Štiglja</h4>
+
+          <p class="stiglija-help">
+            Ako jedan igrač ostane bez ijednog boda,
+            ostalim igračima dodaje se po 100 bodova.
+            Ako dva igrača imaju 0 bodova,
+            treći igrač dobiva ukupno 200 dodatnih bodova.
+          </p>
+
+
+          <div class="stiglija-options">
+
+            <button
+              type="button"
+              class="stiglija-option"
+              [class.selected]="!currentRound.stiglja"
+              (click)="removeStiglja()"
+            >
+              <span>Nema štiglje</span>
+            </button>
+
+
+            <button
+              type="button"
+              class="stiglija-option"
+              [class.selected]="
+                currentRound.stiglja &&
+                currentRound.stigljaPlayer === 0
+              "
+              (click)="setStigljaPlayer(0)"
+            >
+
+              <span>
+                {{ getPlayerName(0) }}
+              </span>
+
+              <small>
+                ima 0 bodova
+              </small>
+
+            </button>
+
+
+            <button
+              type="button"
+              class="stiglija-option"
+              [class.selected]="
+                currentRound.stiglja &&
+                currentRound.stigljaPlayer === 1
+              "
+              (click)="setStigljaPlayer(1)"
+            >
+
+              <span>
+                {{ getPlayerName(1) }}
+              </span>
+
+              <small>
+                ima 0 bodova
+              </small>
+
+            </button>
+
+
+            <button
+              type="button"
+              class="stiglija-option"
+              [class.selected]="
+                currentRound.stiglja &&
+                currentRound.stigljaPlayer === 2
+              "
+              (click)="setStigljaPlayer(2)"
+            >
+
+              <span>
+                {{ getPlayerName(2) }}
+              </span>
+
+              <small>
+                ima 0 bodova
+              </small>
+
+            </button>
+
+          </div>
+
+
+          @if (currentRound.stiglja) {
+
+            <div class="stiglija-active">
+
+              Štiglja:
+
+              <strong>
+                {{ getStigljaText() }}
+              </strong>
+
+            </div>
+
+          }
+
+        </div>
+
+
+        <!-- TRENUTNI IZRAČUN -->
+        <div class="current-calculation">
+
+          <h3>Trenutni izračun</h3>
+
+
+          <div class="calculation-table">
+
+            <div class="table-row table-header">
+
+              <div>Igrač</div>
+              <div>Bodovi</div>
+              <div>Zvanja</div>
+              <div>Štiglja</div>
+              <div>Ukupno</div>
+
+            </div>
+
+
+            <!-- IGRAČ 1 -->
+            <div class="table-row">
+
+              <div class="team-name">
+                {{ getPlayerName(0) }}
+              </div>
+
+              <div>
+                {{ currentRound.player1Points }}
+              </div>
+
+              <div>
+                {{ currentRound.player1Bids }}
+              </div>
+
+              <div>
+                {{ getStigljaPoints(0) }}
+              </div>
+
+              <div class="table-total">
+                {{ getPlayer1Preview() }}
+              </div>
+
+            </div>
+
+
+            <!-- IGRAČ 2 -->
+            <div class="table-row">
+
+              <div class="team-name">
+                {{ getPlayerName(1) }}
+              </div>
+
+              <div>
+                {{ currentRound.player2Points }}
+              </div>
+
+              <div>
+                {{ currentRound.player2Bids }}
+              </div>
+
+              <div>
+                {{ getStigljaPoints(1) }}
+              </div>
+
+              <div class="table-total">
+                {{ getPlayer2Preview() }}
+              </div>
+
+            </div>
+
+
+            <!-- IGRAČ 3 -->
+            <div class="table-row">
+
+              <div class="team-name">
+                {{ getPlayerName(2) }}
+              </div>
+
+              <div>
+                {{ currentRound.player3Points }}
+              </div>
+
+              <div>
+                {{ currentRound.player3Bids }}
+              </div>
+
+              <div>
+                {{ getStigljaPoints(2) }}
+              </div>
+
+              <div class="table-total">
+                {{ getPlayer3Preview() }}
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="calculation-total">
+
+            <div>
+
+              <span>
+                Vrijednost runde
+              </span>
+
+              <strong>
+                {{ getCurrentRoundValue() }}
+              </strong>
+
+            </div>
+
+            <div>
+
+              <span>
+                Uvjet za prolaz
+              </span>
+
+              <strong>
+                Najviše bodova
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- STATUS -->
+        @if (currentRound.caller !== '') {
+
+          <div
+            class="round-status"
+            [class.failed-status]="
+              getRoundStatus() === 'PAD'
+            "
+            [class.success-status]="
+              getRoundStatus() === 'PROŠAO'
+            "
+          >
+
+            @if (getRoundStatus() === 'PAD') {
+
+              <strong>PAD</strong>
+
+              <span>
+                Igrač koji je zvao nije imao najviše
+                bodova. Njegovi bodovi prebačeni su
+                igraču s najviše bodova.
+              </span>
+
+            }
+
+
+            @if (getRoundStatus() === 'PROŠAO') {
+
+              <strong>PROŠAO</strong>
+
+              <span>
+                Igrač koji je zvao imao je najviše
+                bodova.
+              </span>
+
+            }
+
+          </div>
+
+        }
+
+
+        <!-- SPREMI -->
+        @if (editingRoundIndex === null) {
+
+          <button
+            type="button"
+            class="save-round-button"
+            (click)="saveRound()"
+          >
+            SPREMI RUNDU
+          </button>
+
+        } @else {
+
+          <button
+            type="button"
+            class="save-round-button"
+            (click)="updateRound()"
+          >
+            SPREMI IZMJENE
+          </button>
+
+          <button
+            type="button"
+            class="cancel-edit-button"
+            (click)="cancelEdit()"
+          >
+            ODUSTANI
+          </button>
+
+        }
+
+      </div>
+
+    }
+
+
+    <!-- ODIGRANE RUNDE -->
+    @if (rounds.length > 0) {
+
+      <div class="round-list">
+
+        <h3>Odigrane runde</h3>
+
+
+        @for (
+          round of rounds;
+          track round.number;
+          let i = $index
+        ) {
+
+          <div class="round-card">
+
+            <div class="round-info">
+
+              <strong>
+                Runda {{ round.number }}
+              </strong>
+
+              <span>
+                Zvao: {{ round.caller }}
+              </span>
+
+              <span>
+                Adut: {{ round.trump }}
+              </span>
+
+              <span>
+                Bodovi:
+                {{ round.player1Points }}
+                :
+                {{ round.player2Points }}
+                :
+                {{ round.player3Points }}
+              </span>
+
+              <span>
+                Zvanja:
+                {{ round.player1Bids }}
+                :
+                {{ round.player2Bids }}
+                :
+                {{ round.player3Bids }}
+              </span>
+
+
+              @if (round.stiglja) {
+
+                <span class="stiglija-result">
+
+                  Štiglja:
+                  {{ getPlayerName(round.stigljaPlayer) }}
+
+                </span>
+
+              }
+
+
+              <span>
+                Ukupno:
+                {{ round.player1Total }}
+                :
+                {{ round.player2Total }}
+                :
+                {{ round.player3Total }}
+              </span>
+
+
+              @if (round.failed) {
+
+                <span class="failed">
+                  Igrač koji je zvao nije prošao
+                </span>
+
+              }
+
+            </div>
+
+
+            <div class="round-result">
+
+              <span>
+                {{ round.player1Total }}
+                :
+                {{ round.player2Total }}
+                :
+                {{ round.player3Total }}
+              </span>
+
+              <button
+                type="button"
+                class="edit-round-button"
+                (click)="editRound(i)"
+              >
+                ✏️ Uredi
+              </button>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+  </section>
+
+</div>

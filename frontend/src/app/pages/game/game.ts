@@ -12,6 +12,7 @@ import { AuthService } from '../../services/auth';
 
 import { FourPlayer } from './four-player/four-player';
 import { TwoPlayer } from './two-player/two-player';
+import { ThreePlayer } from './three-player/three-player';
 
 
 interface GamePlayer {
@@ -23,7 +24,7 @@ interface GamePlayer {
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [FourPlayer, TwoPlayer],
+  imports: [FourPlayer, TwoPlayer, ThreePlayer],
   templateUrl: './game.html',
   styleUrl: './game.scss'
 })

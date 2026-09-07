@@ -23,6 +23,13 @@
         [targetScore]="targetScore">
       </app-two-player>
 
+    } @else if (players.length === 3) {
+
+      <app-three-player
+        [players]="players"
+        [targetScore]="targetScore">
+      </app-three-player>
+
     } @else {
 
       <p>
