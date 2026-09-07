@@ -10,7 +10,7 @@ export class GamesService {
 
   private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:3000/api/history-games';
+  private apiUrl = 'https://bela-blok-web-backend.onrender.com/api/history-games';
 
   saveGame(gameData: any): Observable<any> {
     return this.http.post(this.apiUrl, gameData);

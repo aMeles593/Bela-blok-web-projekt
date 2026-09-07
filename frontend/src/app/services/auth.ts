@@ -18,7 +18,7 @@ export class AuthService {
 
   private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:3000/api/auth';
+  private apiUrl = 'https://bela-blok-web-backend.onrender.com/api/auth';
 
   register(username: string, password: string): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(
@@ -60,7 +60,7 @@ export class AuthService {
 
   getUsers(): Observable<any[]> {
     return this.http.get<any[]>(
-      'http://localhost:3000/api/users'
+      'https://bela-blok-web-backend.onrender.com/api/users'
     );
   }
 }
