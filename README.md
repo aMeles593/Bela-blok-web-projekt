@@ -33,7 +33,7 @@ Aplikacija omogućuje:
 * unos rezultata rundi
 * vođenje ukupnog rezultata
 * evidentiranje zvanja
-* podršku za situaciju „štigla“
+* podršku za situaciju „štiglja“
 * spremanje završenih igara u bazu podataka
 * pregled povijesti odigranih igara
 * pregled statistike igrača
