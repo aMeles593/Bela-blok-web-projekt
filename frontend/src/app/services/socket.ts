@@ -15,7 +15,12 @@ export class SocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('https://bela-blok-web-backend.onrender.com');
+    const socketUrl =
+        window.location.hostname === 'localhost'
+        ? 'http://localhost:3000'
+        : 'https://bela-blok-web-backend.onrender.com';
+
+    this.socket = io(socketUrl);
 
     this.socket.on('connect', () => {
         console.log('Socket.IO spojen:', this.socket.id);
@@ -28,7 +33,7 @@ export class SocketService {
     this.socket.on('connect_error', (error) => {
         console.error('Socket.IO greška:', error);
     });
-  }
+    }
 
   calculateFourPlayerPoints(
     team: number,
