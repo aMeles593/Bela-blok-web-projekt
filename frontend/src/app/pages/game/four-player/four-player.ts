@@ -2,6 +2,7 @@ import {Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef, inject } 
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { GamesService } from '../../../services/games';
+import { SocketService } from '../../../services/socket';
 
 interface GamePlayer {
   id: number;
@@ -49,6 +50,7 @@ export class FourPlayer implements OnChanges {
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
   private gamesService = inject(GamesService);
+  private socketService = inject(SocketService);
 
 
   @Input()
@@ -69,6 +71,21 @@ export class FourPlayer implements OnChanges {
   completedParties: any[] = [];
   readonly GAME_POINTS = 162;
   readonly STIGLJA_POINTS = 90;
+
+  constructor() {
+    this.socketService
+      .onFourPlayerPointsCalculated()
+      .subscribe((data) => {
+
+        if (!this.currentRound) return;
+
+        this.currentRound.team1Points = data.team1Points;
+        this.currentRound.team2Points = data.team2Points;
+
+        this.calculateCurrentRound();
+        this.cdr.detectChanges();
+      });
+  }
 
   ngOnChanges(changes: SimpleChanges) {
 
@@ -381,7 +398,6 @@ export class FourPlayer implements OnChanges {
 
   }
 
-
   updateTeam1Points() {
 
     if (!this.currentRound) {
@@ -418,6 +434,9 @@ export class FourPlayer implements OnChanges {
     );
 
     this.currentRound.team1Points = points;
+
+    // Socket.IO - šaljemo bodove serveru
+    this.socketService.calculateFourPlayerPoints(0, points);
 
     if (!this.currentRound.stiglja) {
 
@@ -468,6 +487,9 @@ export class FourPlayer implements OnChanges {
     );
 
     this.currentRound.team2Points = points;
+
+    // Socket.IO - šaljemo bodove serveru
+    this.socketService.calculateFourPlayerPoints(1, points);
 
     if (!this.currentRound.stiglja) {
 
