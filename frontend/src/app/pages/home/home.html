@@ -190,6 +190,51 @@
 
     </a>
 
+    <div class="quote-card">
+
+      <div class="quote-icon">
+        💬
+      </div>
+
+      <div class="quote-content">
+
+        <h2>
+          Motivacija za današnju partiju
+        </h2>
+
+        @if (loadingQuote) {
+
+          <p>
+            Učitavanje citata...
+          </p>
+
+        } @else {
+
+          <p class="quote">
+            „{{ quote }}“
+          </p>
+
+          @if (quoteAuthor) {
+            <p class="quote-author">
+              — {{ quoteAuthor }}
+            </p>
+          }
+
+        }
+
+      </div>
+
+      <button
+        type="button"
+        class="quote-button"
+        (click)="loadQuote()"
+        [disabled]="loadingQuote"
+      >
+        Novi citat
+      </button>
+
+    </div>
+
   </div>
 
 </div>

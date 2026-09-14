@@ -352,6 +352,15 @@ h1 {
   .statistics-card {
     max-width: 100%;
   }
+  
+  .quote-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .quote-button {
+    width: 100%;
+}
 
 }
 
@@ -423,4 +432,83 @@ h1 {
 .remove-image-button:hover {
   text-decoration: underline;
   opacity: 1;
+}
+
+.quote-card {
+  width: 100%;
+  max-width: 500px;
+  margin: 20px auto 0;
+  padding: 20px 25px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  text-align: left;
+
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+}
+
+.quote-icon {
+  width: 50px;
+  height: 50px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  flex-shrink: 0;
+
+  font-size: 25px;
+
+  background: white;
+  border-radius: 15px;
+}
+
+.quote-content {
+  flex: 1;
+}
+
+.quote-content h2 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.quote {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+.quote-author {
+  margin: 6px 0 0;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.quote-button {
+  padding: 8px 12px;
+
+  border: 1px solid white;
+  border-radius: 8px;
+
+  background: transparent;
+  color: white;
+
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.quote-button:hover {
+  background: white;
+  color: #123524;
+}
+
+.quote-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

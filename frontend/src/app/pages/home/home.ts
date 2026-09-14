@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { ProfileImageService } from '../../services/profile-image';
+import { QuoteService } from '../../services/quote';
 
 @Component({
   selector: 'app-home',
@@ -9,16 +10,25 @@ import { ProfileImageService } from '../../services/profile-image';
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
-export class Home {
+export class Home implements OnInit {
 
   private authService = inject(AuthService);
   private profileImageService = inject(ProfileImageService);
+  private quoteService = inject(QuoteService);
+
+  quote = '';
+  quoteAuthor = '';
+  loadingQuote = false;
 
   currentUser = this.authService.getCurrentUser();
 
   selectedFile: File | null = null;
   uploadingImage = false;
 
+  ngOnInit() {
+    this.loadQuote();
+  }
+  
   logout() {
     this.authService.logout();
     this.currentUser = null;
@@ -100,5 +110,22 @@ export class Home {
           );
         }
       });
+  }
+
+  loadQuote() {
+    this.loadingQuote = true;
+
+    this.quoteService.getRandomQuote().subscribe({
+      next: (data) => {
+        this.quote = data.quote;
+        this.quoteAuthor = data.author;
+        this.loadingQuote = false;
+      },
+
+      error: (error) => {
+        console.error('Greška kod dohvaćanja citata:', error);
+        this.loadingQuote = false;
+      }
+    });
   }
 }

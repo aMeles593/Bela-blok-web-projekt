@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth.routes');
 const usersRoutes = require('./routes/users.routes');
 const gamesRoutes = require('./routes/games.routes');
 const statisticsRoutes = require('./routes/statistics.routes');
+const quoteRoutes = require('./routes/quote.routes');
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/history-games', gamesRoutes);
 app.use('/api/statistics', statisticsRoutes);
+app.use('/api/quote', quoteRoutes);
 
 app.get('/api/test', (req, res) => {
   res.json({
