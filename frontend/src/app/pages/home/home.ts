@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, ChangeDetectorRef, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { ProfileImageService } from '../../services/profile-image';
@@ -15,6 +15,7 @@ export class Home implements OnInit {
   private authService = inject(AuthService);
   private profileImageService = inject(ProfileImageService);
   private quoteService = inject(QuoteService);
+  private cdr = inject(ChangeDetectorRef);
 
   quote = '';
   quoteAuthor = '';
@@ -28,7 +29,7 @@ export class Home implements OnInit {
   ngOnInit() {
     this.loadQuote();
   }
-  
+
   logout() {
     this.authService.logout();
     this.currentUser = null;
@@ -113,17 +114,29 @@ export class Home implements OnInit {
   }
 
   loadQuote() {
+    console.log('POZIVAM QUOTE API');
+
     this.loadingQuote = true;
 
     this.quoteService.getRandomQuote().subscribe({
       next: (data) => {
+
+        console.log('QUOTE ODGOVOR:', data);
+
         this.quote = data.quote;
         this.quoteAuthor = data.author;
+
+        console.log('QUOTE:', this.quote);
+        console.log('AUTHOR:', this.quoteAuthor);
+
         this.loadingQuote = false;
+        this.cdr.detectChanges();
       },
 
       error: (error) => {
-        console.error('Greška kod dohvaćanja citata:', error);
+
+        console.error('QUOTE ERROR:', error);
+
         this.loadingQuote = false;
       }
     });
