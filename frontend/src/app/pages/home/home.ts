@@ -78,4 +78,27 @@ export class Home {
     const img = event.target as HTMLImageElement;
     img.src = '/default-profile.png';
   }
+
+  removeProfileImage() {
+    if (!this.currentUser) {
+      return;
+    }
+
+    this.profileImageService
+      .removeImage(this.currentUser.id)
+      .subscribe({
+        next: () => {
+          window.location.reload();
+        },
+
+        error: (error) => {
+          console.error('Greška pri uklanjanju slike:', error);
+
+          alert(
+            error?.error?.message ||
+            'Greška pri uklanjanju profilne slike.'
+          );
+        }
+      });
+  }
 }

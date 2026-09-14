@@ -409,3 +409,18 @@ h1 {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.remove-image-button {
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 0;
+  opacity: 0.8;
+}
+
+.remove-image-button:hover {
+  text-decoration: underline;
+  opacity: 1;
+}

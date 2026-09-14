@@ -23,6 +23,12 @@ export class ProfileImageService {
     );
   }
 
+  removeImage(userId: number): Observable<any> {
+    return this.http.delete(
+        `${this.apiUrl}/${userId}/profile-image`
+    );
+    }
+
   getImageUrl(userId: number): string {
     return `${this.apiUrl}/${userId}/profile-image`;
   }
